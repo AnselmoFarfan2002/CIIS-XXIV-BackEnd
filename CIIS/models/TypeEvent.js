@@ -35,10 +35,10 @@ const TypeEvent = sequelize.define(
 // })
 
 TypeEvent.hasMany(Events,{
-  foreignKey: "typeEventId",
+  foreignKey: "type_event_id",
 });
 Events.belongsTo(TypeEvent,{
-  foreignKey: "typeEventId",
+  foreignKey: "type_event_id",
 });
 
 module.exports = TypeEvent;

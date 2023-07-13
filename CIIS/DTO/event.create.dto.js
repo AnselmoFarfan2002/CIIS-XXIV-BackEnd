@@ -2,9 +2,6 @@ const Ajv = require("ajv");
 
 const ajv = new Ajv();
 
-
-
-
 const createEventDTO = {
   type: "object",
   properties: {

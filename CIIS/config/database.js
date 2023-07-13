@@ -8,12 +8,12 @@ const sequelize = new Sequelize(
     host: database.host,
     port: database.port,
     dialect: "mysql",
-    // dialectOptions: {
+    dialectOptions: {
     //   ssl: {
     //     require: false, // Requiere una conexión segura
     //     rejectUnauthorized: false // Permite conexiones a servidores con certificados no confiables
     //   },
-    // },
+    },
   }
 );
 

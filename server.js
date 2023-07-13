@@ -18,8 +18,8 @@ class Server{
         this.app.set('PORT', configServer.port)
         this.app.use(cors());
         this.app.use(morgan("dev"));
-        this.app.use(express.urlencoded({ extended: true }));
         this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: false }));
     }
 
     socket(){
@@ -27,9 +27,9 @@ class Server{
     }
     routes(){
         this.app.use('/api/v1', CIIS_API_ROUTES)
-        this.app.use(express.static(path.join(__dirname, '../cliente/build')))
+        this.app.use(express.static(path.join(__dirname, 'build')))
         this.app.get('*', (req, res) => {
-            res.sendFile(path.join(__dirname, '../cliente/build', 'index.html'));
+            res.sendFile(path.join(__dirname, 'build', 'index.html'));
         })
     }
 
