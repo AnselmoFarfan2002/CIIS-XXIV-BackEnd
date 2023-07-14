@@ -12,6 +12,7 @@ module.exports = {
     },
     secret_key: {
       jwt_key: process.env.JWT_PRIVATE_KEY || "C5hCWr@cB<zl6C*]g8sjG7~P@%v9UcXJ",
+      recaptcha_key:process.env.KEY_RECAPTCHA||'6LeWTiMnAAAAAK1CzdpM9uIxkn3AoM42OZLpySGR'
     },
   };
   

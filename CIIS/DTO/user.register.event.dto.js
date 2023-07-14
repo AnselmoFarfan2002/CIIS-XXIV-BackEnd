@@ -18,7 +18,11 @@ const UserRegisterEventDto = Type.Object(
     },
     }),
     phone: Type.String(),
+    typeattendee:Type.Number(),
     numvoucher:{
+      ignore:true,
+    },
+    recaptchaValue:{
       ignore:true,
     }
   },

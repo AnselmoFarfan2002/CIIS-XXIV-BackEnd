@@ -11,7 +11,7 @@ const uploadImage = require("../utils/upload.img");
 const createPreRegisterUser = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {
-    const { name, firstLastname, secondLastname, email, phone, numvoucher } =
+    const { name, firstLastname, secondLastname, email, phone, numvoucher,typeattendee } =
       req.body;
     const userDTO = new UserDTO(
       name,
@@ -38,7 +38,7 @@ const createPreRegisterUser = async (req, res) => {
     reservationObject.isActive = 1;
     reservationObject.event = 12;
     reservationObject.user = userCreated.id_user;
-    reservationObject.type_attendee=2;
+    reservationObject.type_attendee=typeattendee;
 
     await reservationService.createReservationEvent(
       reservationObject,

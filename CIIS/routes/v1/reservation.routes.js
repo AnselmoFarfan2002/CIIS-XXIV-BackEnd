@@ -3,8 +3,8 @@ const fileUpload=require("express-fileupload");
 const routerRegister=Router();
 const userRegisterDTO=require("../../DTO/user.register.event.dto")
 const {createPreRegisterUser}=require("../../controllers/reservation.controller");
-const upload=require("../../controllers/uploadFileController");
 const uploadFile = require("../../middlewares/upload.file");
+const handleRecaptcha = require("../../middlewares/handleRecaptcha");
 
 
 routerRegister.use(fileUpload({
@@ -13,6 +13,6 @@ routerRegister.use(fileUpload({
 }));
 
 routerRegister
-.post('/',uploadFile("imgvoucher"),userRegisterDTO,createPreRegisterUser);
+.post('/',handleRecaptcha,uploadFile("imgvoucher"),userRegisterDTO,createPreRegisterUser);
 
 module.exports=routerRegister;
