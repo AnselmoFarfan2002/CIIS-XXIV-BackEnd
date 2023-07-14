@@ -18,7 +18,7 @@ const UserRegisterEventDto = Type.Object(
     },
     }),
     phone: Type.String(),
-    typeattendee:Type.Number(),
+    typeattendee:Type.String({ pattern: '^[0-9]+$' }),
     numvoucher:{
       ignore:true,
     },

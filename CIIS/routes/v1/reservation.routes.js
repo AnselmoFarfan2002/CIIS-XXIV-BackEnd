@@ -5,6 +5,7 @@ const userRegisterDTO=require("../../DTO/user.register.event.dto")
 const {createPreRegisterUser}=require("../../controllers/reservation.controller");
 const uploadFile = require("../../middlewares/upload.file");
 const handleRecaptcha = require("../../middlewares/handleRecaptcha");
+const { validateKeyTypeAttende } = require("../../middlewares/validateExistenceOfRecord");
 
 
 routerRegister.use(fileUpload({
@@ -13,6 +14,6 @@ routerRegister.use(fileUpload({
 }));
 
 routerRegister
-.post('/',handleRecaptcha,uploadFile("imgvoucher"),userRegisterDTO,createPreRegisterUser);
+.post('/',handleRecaptcha,uploadFile("imgvoucher"),userRegisterDTO,validateKeyTypeAttende,createPreRegisterUser);
 
 module.exports=routerRegister;

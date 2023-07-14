@@ -90,11 +90,22 @@ const getEventImagesByType=async({type=null})=>{
   return galleryTypeEvent;
 }
 
+const searchEventActive = async (event) => {
+  const oneEvent = await Event.findOne({
+    where: {
+      id_event:event,
+      active:true,
+    },
+  });
+  return (oneEvent);
+};
+
 module.exports = {
   getEvents,
   getOneEvent,
   createEvent,
   updateEvent,
   deleteEvent,
-  getEventImagesByType
+  getEventImagesByType,
+  searchEventActive
 };
