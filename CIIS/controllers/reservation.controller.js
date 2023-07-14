@@ -1,14 +1,12 @@
 const { nanoid } = require("nanoid");
-const fs=require("fs");
 const sequelize = require("../config/database");
 const { createRegisterUser } = require("../services/user.service");
 const reservationService = require("../services/reservation.service");
 const UserDTO = require("../DTO/user.dto");
-const { handleHttpError } = require("../middlewares/handleError");
+const { handleHttpError, handleErrorResponse } = require("../middlewares/handleError");
 const ReservationDTO = require("../DTO/reservation.dto");
-const path = require("path");
+const uploadImage = require("../utils/upload.img");
 
-const PATHVOUCHER=path.join(__dirname,'../../build/voucher');
 
 const createPreRegisterUser = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -26,10 +24,16 @@ const createPreRegisterUser = async (req, res) => {
     userDTO.code = code;
     userDTO.role = 2;
     const userCreated = await createRegisterUser(userDTO, transaction);
-
+    const response=await uploadImage(req.files.imgvoucher,"voucher",["jpg","jpeg","png"]);
+    
+    if(!response.ok){
+      handleErrorResponse(res,response.msg,response.code);
+      return;
+    }
+    
     const reservationObject = new ReservationDTO(numvoucher);
 
-    reservationObject.filevoucher = req.file.filename;
+    reservationObject.filevoucher = response.filename;
     reservationObject.statusRegister = 1;
     reservationObject.isActive = 1;
     reservationObject.event = 12;
@@ -45,12 +49,7 @@ const createPreRegisterUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     await transaction.rollback();
-    fs.unlink(path.join(PATHVOUCHER,req.file.filename), (err) => {
-      if (err) {
-        console.log("Error al eliminar el archivo");
-      }
-      handleHttpError(res, error);
-    });
+    handleHttpError(res,error);
   }
 };
 

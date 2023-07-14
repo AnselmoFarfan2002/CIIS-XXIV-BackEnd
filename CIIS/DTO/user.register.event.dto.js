@@ -5,7 +5,7 @@ const addFormats = require("ajv-formats");
 const { handleErrorResponse } = require("../middlewares/handleError");
 const Ajv = require("ajv");
 
-const CreateUserDto = Type.Object(
+const UserRegisterEventDto = Type.Object(
   {
     name: Type.String(),
     firstLastname: Type.String(),
@@ -30,7 +30,7 @@ const CreateUserDto = Type.Object(
   }
 );
 
-const ajv = new Ajv({ allErrors: true })
+const ajv = new Ajv({ allErrors: true, messages: true })
   .addKeyword("kind")
   .addKeyword("modifier")
   .addKeyword("ignore",{
@@ -40,7 +40,7 @@ const ajv = new Ajv({ allErrors: true })
 addFormats(ajv, ["email"]);
 addErrors(ajv);
 
-const validateSchema = ajv.compile(CreateUserDto);
+const validateSchema = ajv.compile(UserRegisterEventDto);
 
 const userRegisterDTO = (req, res,next) => {
   const isDTOValid = validateSchema(req.body);
