@@ -24,11 +24,25 @@
   },
   "homepage": "https://github.com/AnselmoFarfan2002/CIIS-XXIV#readme",
   "dependencies": {
-    "dotenv": "^16.0.3",
+    "@sinclair/typebox": "^0.28.18",
+    "ajv": "^8.12.0",
+    "ajv-errors": "^3.0.0",
+    "ajv-formats": "^2.1.1",
+    "ajv-keywords": "^5.1.0",
+    "axios": "^1.4.0",
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "mongoose": "^7.1.0",
+    "express-fileupload": "^1.4.0",
+    "jose": "^4.14.4",
     "morgan": "^1.10.0",
-    "path": "^0.12.7"
+    "mysql2": "^3.3.5",
+    "nanoid": "^3.3.4",
+    "nodemailer": "^6.9.3",
+    "sequelize": "^6.32.1",
+    "socket.io": "^4.6.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
