@@ -18,6 +18,8 @@ const UserRegisterEventDto = Type.Object(
     },
     }),
     phone: Type.String(),
+    career: Type.String(),
+    studycenter: Type.String(),
     typeattendee:Type.String({ pattern: '^[0-9]+$' }),
     numvoucher:{
       ignore:true,

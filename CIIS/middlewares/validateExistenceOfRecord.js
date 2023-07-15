@@ -2,6 +2,8 @@ const { searchEventActive } = require("../services/event.service");
 const {searchTypeAttendeByEvent}=require("../services/typeAttendee.service");
 const { handleErrorResponse } = require("./handleError");
 
+
+//Valida que el evento exista y que el tipo de asistente este relacionado con este
 const validateKeyTypeAttende=async(req,res,next)=>{
     
     if(!req.query ||
@@ -27,8 +29,26 @@ const validateKeyTypeAttende=async(req,res,next)=>{
         return;
     }
 
-    next();
+    const {isuniversity}=existTypeAttendee;
 
+    if(!isuniversity){
+        req.attendeeuniversity=false;
+        next();
+        return;
+    }
+
+    /** Al ser un asistente universitario se valida que exista
+     * el file de su documento universitario
+    **/
+
+    if(!req.files ||
+        Object.keys(req.files).length===0 ||
+        !req.files["fileuniversity"]){
+        res.status(400).json({msg:"Carnet o ficha de matrícula requerida"});
+        return;
+    }
+    req.attendeeuniversity=true;
+    next();
 }
 
 module.exports={

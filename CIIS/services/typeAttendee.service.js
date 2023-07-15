@@ -7,7 +7,7 @@ const searchTypeAttendeByEvent=async(type,event)=>{
             event_id:event 
         } });
     
-    return (oneTypeAttendee);
+    return oneTypeAttendee;
 }
 
 module.exports={

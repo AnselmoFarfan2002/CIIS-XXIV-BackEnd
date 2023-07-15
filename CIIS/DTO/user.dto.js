@@ -1,9 +1,11 @@
 class UserDTO{
-    constructor(name,firstlasname,secondlastname,email,phone){
+    constructor(name,firstlasname,secondlastname,email,phone,career,studycenter){
         this.name_user=name;
         this.lastname_user=firstlasname+" "+secondlastname;
         this.email_user=email;
         this.phone_user=phone;
+        this.university_career_user=career
+        this.study_center_user=studycenter;
     }
     /**
      * @param {string} code

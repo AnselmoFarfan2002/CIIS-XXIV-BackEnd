@@ -11,4 +11,6 @@ const uploadFile=(nameFile)=>(req,res,next)=>{
     next();
 }
 
+
+
 module.exports=uploadFile;

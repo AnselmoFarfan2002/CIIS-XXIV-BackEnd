@@ -9,12 +9,17 @@ const TypeAttendee=sequelize.define('type_attendee',{
         autoIncrement:true
     },
     name_attendee:{
-        type:DataTypes.STRING(20),
+        type:DataTypes.STRING(100),
         allowNull:false,
     },
     price_attendee:{
         type:DataTypes.DECIMAL(6,2),
         allowNull:false,
+    },
+    isuniversity:{
+        type:DataTypes.BOOLEAN,
+        allowNull:false,
+        defaultValue:true
     }
 },{
     timestamps:false

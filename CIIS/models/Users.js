@@ -25,6 +25,14 @@ const Users=sequelize.define("users",{
         type:DataTypes.STRING,
         allowNull:false, 
     },
+    university_career_user:{
+        type:DataTypes.STRING,
+        allowNull:false,
+    },
+    study_center_user:{
+        type:DataTypes.STRING,
+        allowNull:false,
+    },
     password_user:{
         type:DataTypes.STRING,
         allowNull:true,
