@@ -79,7 +79,7 @@ const getEventImagesByType=async({type=null})=>{
   }
   const galleryTypeEvent=await Event.findAll({
     where:{
-      typeEventId:type
+      type_event_id:type
     },
     include:[{
       model:Gallery,
