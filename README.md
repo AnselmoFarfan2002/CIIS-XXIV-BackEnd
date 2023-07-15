@@ -14,5 +14,6 @@ estos seran importantes para la conexión a la DB.
 2. Ejecutar el comando docker compose up
 
 Una vez ejecutada la aplicacion, no dirigimos a la ruta CIIS/db/insertData.sql e ingresamos a nuestro servidor de base de datos para ejecutar las consultas.
+Importante: Para ingresar al servidor de la bd si lo desplegamos por docker el puerto sera 3307, de no ser el caso entonces conectarse con el puerto 3306
 
 Tenga en cuenta que si corre la aplicacion desde docker, la ruta del servidor para la aplicación corre en el puerto 4000, si no fuera por docker entonces funciona en el puerto 3000.
