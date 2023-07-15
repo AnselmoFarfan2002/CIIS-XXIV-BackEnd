@@ -19,6 +19,10 @@ const Reservation=sequelize.define("reservation",{
         type:DataTypes.STRING,
         allowNull:false,
     },
+    dir_fileuniversity:{
+        type:DataTypes.STRING,
+        allowNull:true,
+    },
     enrollment_status:{
         type:DataTypes.TINYINT(1),
         allowNull:false,
