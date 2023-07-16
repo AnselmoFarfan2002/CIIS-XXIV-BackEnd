@@ -11,7 +11,7 @@ const ReservationDTO = require("../DTO/reservation.dto");
 const createPreRegisterUser = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {
-    const { name, firstLastname, secondLastname, email, phone,career,studycenter, numvoucher,typeattendee } =
+    const { name, firstLastname, secondLastname, email,dni, phone,career,studycenter, numvoucher,typeattendee } =
       req.body;
     const {files,attendeeuniversity=false}=req;
     const {event}=req.query;
@@ -20,6 +20,7 @@ const createPreRegisterUser = async (req, res) => {
       firstLastname,
       secondLastname,
       email,
+      dni,
       phone,
       career,
       studycenter
