@@ -6,7 +6,7 @@ const { handleErrorResponse } = require("./handleError");
 const handleRecaptcha=(req,res,next)=>{
     try {
         const recaptchaValue = req.body["g-recaptcha-response"] ? req.body["g-recaptcha-response"] : ""
-        axios("https://www.google.com/recaptcha/api/siteverify", {
+        axios.post("https://www.google.com/recaptcha/api/siteverify", {
             secret: recaptcha_key,
             response: recaptchaValue
         }).then(data=>{
