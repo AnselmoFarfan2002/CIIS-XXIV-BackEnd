@@ -5,7 +5,8 @@ const {secret_key:{
 const { handleErrorResponse } = require("./handleError");
 const handleRecaptcha=(req,res,next)=>{
     try {
-        const {recaptchaValue=''}=req.body
+        const recaptchaValue = req.body["g-recaptcha-response"] ? req.body["g-recaptcha-response"] : ""
+        
         axios({
             url:`http://wwww.google.com/recaptcha/api/siteverify?secret=${recaptcha_key}&response=${recaptchaValue}`,
             method:'POST'
