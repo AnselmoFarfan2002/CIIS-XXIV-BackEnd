@@ -24,7 +24,7 @@ const UserRegisterEventDto = Type.Object(
     numvoucher:{
       ignore:true,
     },
-    recaptchaValue:{
+    "g-recaptcha-response":{
       ignore:true,
     }
   },
@@ -53,7 +53,7 @@ const userRegisterDTO = (req, res,next) => {
 
   if (!isDTOValid) {
     const errors = validateSchema.errors.map((error) => error.message);
-    handleErrorResponse(res, errors, 400);
+    handleErrorResponse(res, {errors, received: req.body}, 400);
     return;
   }
   

@@ -6,19 +6,15 @@ const { handleErrorResponse } = require("./handleError");
 const handleRecaptcha=(req,res,next)=>{
     try {
         const recaptchaValue = req.body["g-recaptcha-response"] ? req.body["g-recaptcha-response"] : ""
-        
-        axios({
-            url:`http://wwww.google.com/recaptcha/api/siteverify?secret=${recaptcha_key}&response=${recaptchaValue}`,
-            method:'POST'
+        axios("https://www.google.com/recaptcha/api/siteverify", {
+            secret: recaptcha_key,
+            response: recaptchaValue
         }).then(data=>{
-            if(!data.sucess){
-                handleErrorResponse(
-                    res,"Recaptcha verification failed!",400);
-                return;
-            }
-            next();
+            if(data.success) return next();
+        
+            handleErrorResponse(res,"Recaptcha verification failed!",400);
         }).catch(err=>{
-            handleErrorResponse(res,"Invalid Recaptcha",400);
+            handleErrorResponse(res,{err, msg: "Invalid Recaptcha"},400);
             return;
         })
     } catch (error) {
