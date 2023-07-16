@@ -21,6 +21,11 @@ const Users=sequelize.define("users",{
         type:DataTypes.STRING,
         allowNull:false, 
     },
+    dni_user:{
+        type:DataTypes.STRING(20),
+        allowNull:true,
+        unique:true
+    },
     phone_user:{
         type:DataTypes.STRING,
         allowNull:false, 

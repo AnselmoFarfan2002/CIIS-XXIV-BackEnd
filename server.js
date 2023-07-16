@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const path = require("path");
-const CIIS_API_ROUTES = require('./CIIS/routes/v1/ciis.routes.js')
+const CIIS_API_ROUTES = require('./CIIS/routes/index.routes')
 const {app:configServer}=require("./CIIS/config/development.js")
 class Server{
     constructor(){
@@ -26,7 +26,7 @@ class Server{
 
     }
     routes(){
-        this.app.use('/api/v1', CIIS_API_ROUTES)
+        this.app.use('/api', CIIS_API_ROUTES)
         this.app.use(express.static(path.join(__dirname, 'build')))
         this.app.get('*', (req, res) => {
             res.sendFile(path.join(__dirname, 'build', 'index.html'));

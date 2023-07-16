@@ -20,4 +20,4 @@ services:
        MYSQL_PASSWORD: $DB_PASSWORD
        MYSQL_ROOT_PASSWORD: root
     ports:
-      - $DB_LOCAL_PORT:$DB_DOCKER_PORT
+      - $DB_LOCAL_PORT:$DB_SERVER_PORT

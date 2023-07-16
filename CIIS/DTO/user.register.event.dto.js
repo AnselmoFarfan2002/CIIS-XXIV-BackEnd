@@ -17,6 +17,11 @@ const UserRegisterEventDto = Type.Object(
         format: "El formato email no es válido"
     },
     }),
+    dni:Type.String({
+      minLength:8,
+      maxLength:20
+    }
+    ),
     phone: Type.String(),
     career: Type.String(),
     studycenter: Type.String(),
