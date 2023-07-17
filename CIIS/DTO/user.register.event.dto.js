@@ -7,31 +7,44 @@ const Ajv = require("ajv");
 
 const UserRegisterEventDto = Type.Object(
   {
-    name: Type.String(),
-    firstLastname: Type.String(),
-    secondLastname: Type.String(),
+    name: Type.String({
+      minLength: 1,
+      errorMessage: "Debe especificar su nombre",
+    }),
+    firstLastname: Type.String({
+      minLength: 1,
+      errorMessage: "Debe especificar su primer apellido",
+    }),
+    secondLastname: Type.String({
+      minLength: 1,
+      errorMessage: "Debe especificar su segundo apellido",
+    }),
     email: Type.String({
-      format:"email",
+      format: "email",
       errorMessage: {
         type: "El campo email debe ser una cadena",
-        format: "El formato email no es válido"
-    },
+        format: "El email no es válido",
+      },
     }),
-    dni:Type.String({
-      minLength:8,
-      maxLength:20
-    }
-    ),
-    phone: Type.String(),
+    dni: Type.String({
+      minLength: 8,
+      maxLength: 20,
+      errorMessage: "El DNI no es válido",
+    }),
+    phone: Type.String({
+      minLength: 1,
+      errorMessage: "Debe especificar un número de contacto",
+    }),
     career: Type.String(),
     studycenter: Type.String(),
-    typeattendee:Type.String({ pattern: '^[0-9]+$' }),
-    numvoucher:{
-      ignore:true,
+    typeattendee: Type.String({ pattern: "^[0-9]+$" }),
+    numvoucher: Type.String({
+      minLength: 1,
+      errorMessage: "Debe especificar un número de operación",
+    }),
+    "g-recaptcha-response": {
+      ignore: true,
     },
-    "g-recaptcha-response":{
-      ignore:true,
-    }
   },
   {
     additionalProperties: false,
@@ -44,25 +57,25 @@ const UserRegisterEventDto = Type.Object(
 const ajv = new Ajv({ allErrors: true, messages: true })
   .addKeyword("kind")
   .addKeyword("modifier")
-  .addKeyword("ignore",{
+  .addKeyword("ignore", {
     validate: () => true,
-    errors: false
+    errors: false,
   });
 addFormats(ajv, ["email"]);
 addErrors(ajv);
 
 const validateSchema = ajv.compile(UserRegisterEventDto);
 
-const userRegisterDTO = (req, res,next) => {
+const userRegisterDTO = (req, res, next) => {
   const isDTOValid = validateSchema(req.body);
 
   if (!isDTOValid) {
     const errors = validateSchema.errors.map((error) => error.message);
-    handleErrorResponse(res, {errors, received: req.body}, 400);
+    handleErrorResponse(res, errors, 400);
     return;
   }
-  
+
   next();
 };
 
-module.exports=userRegisterDTO;
+module.exports = userRegisterDTO;
