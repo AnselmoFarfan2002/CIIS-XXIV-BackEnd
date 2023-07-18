@@ -50,7 +50,11 @@ const createPreRegisterUser = async (req, res) => {
     res.sendStatus(201);
   } catch (error) {
     await transaction.rollback();
-    handleHttpError(res,error);
+    if(error.code){
+       handleErrorResponse(res,error.message,error.code);
+       return;
+    }
+    return handleHttpError(res,error);
   }
 };
 

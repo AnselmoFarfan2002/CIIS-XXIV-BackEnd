@@ -14,6 +14,6 @@ routerRegister.use(fileUpload({
 }));
 
 routerRegister
-.post('/',handleRecaptcha,uploadFile("imgvoucher"),userRegisterDTO,validateKeyTypeAttende,createPreRegisterUser);
+.post('/',uploadFile("imgvoucher"),userRegisterDTO,validateKeyTypeAttende,createPreRegisterUser);
 
 module.exports=routerRegister;
