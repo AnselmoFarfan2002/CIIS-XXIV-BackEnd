@@ -1,5 +1,5 @@
 const Reservation = require("../models/Reservation");
-const uploadImage = require("../utils/upload.img");
+const { uploadImage, deleteImage } = require("../utils/upload.img");
 
 const createReservationEvent = async (
   registerObject,
@@ -8,6 +8,8 @@ const createReservationEvent = async (
   transaction
 ) => {
   return new Promise(async (resolve, reject) => {
+    let pathTemp='';
+    let objectDir=[];
     try {
       const reservationCreated = await Reservation.create(registerObject, {
         transaction,
@@ -19,14 +21,7 @@ const createReservationEvent = async (
         "png",
       ]);
 
-      if (!voucherUploaded.ok) {
-        reject({
-          ok: false,
-          msg: voucherUploaded.msg,
-          code: voucherUploaded.code,
-        });
-        return;
-      }
+      pathTemp=voucherUploaded.filename;
 
       if (!attendeeuniversity) {
         reservationCreated.dir_voucher = voucherUploaded.filename;
@@ -34,27 +29,21 @@ const createReservationEvent = async (
         resolve({ ok: true });
         return;
       }
-
       const { fileuniversity } = files;
+      console.log(voucherUploaded.filename)
       const fileuniversityUploaded = await uploadImage(
         fileuniversity,
         "file-university",
         ["jpg", "jpeg", "png"]
-      );
-
-      if (!fileuniversityUploaded.ok) {
-        reject({
-          ok: false,
-          msg: voucherUploaded.msg,
-          code: voucherUploaded.code,
-        });
-        return;
-      }
-
+        );
+        
       reservationCreated.dir_voucher = voucherUploaded.filename;
       reservationCreated.dir_fileuniversity = fileuniversityUploaded.filename;
       await reservationCreated.save({ transaction });
-      resolve({ ok: true });
+      objectDir.push(voucherUploaded.filename);
+      objectDir.push(fileuniversityUploaded.filename);
+
+      resolve({ ok: true,objectDir });
       return;
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
@@ -63,6 +52,10 @@ const createReservationEvent = async (
           code: 409,
           message: "El número de voucher ya fue utilizado, ¡ingrese uno nuevo!",
         });
+        return;
+      }else if(error.file=="file-university"){
+        await deleteImage(pathTemp);
+        reject(error);
         return;
       } else {
         reject(error);

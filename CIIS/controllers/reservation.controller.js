@@ -1,14 +1,18 @@
 const { nanoid } = require("nanoid");
+const path = require("path");
+const fs=require("fs");
 const sequelize = require("../config/database");
 const { createRegisterUser } = require("../services/user.service");
 const reservationService = require("../services/reservation.service");
 const UserDTO = require("../DTO/user.dto");
 const { handleHttpError, handleErrorResponse } = require("../middlewares/handleError");
 const ReservationDTO = require("../DTO/reservation.dto");
-// const uploadImage = require("../utils/upload.img");
-
+const sendMail=require("../utils/sendMail")
+const bodyEmail=require("../config/bodyEmail");
+const PATH_FILES_PRIVATE=path.join(__dirname,'../../uploads/private');
 
 const createPreRegisterUser = async (req, res) => {
+  let filesToDelete=[];
   const transaction = await sequelize.transaction();
   try {
     const { name, firstLastname, secondLastname, email,dni, phone,career,studycenter, numvoucher,typeattendee } =
@@ -40,16 +44,25 @@ const createPreRegisterUser = async (req, res) => {
       isActive=1,
     );
 
-    await reservationService.createReservationEvent(
+    const {objectDir:pathsimage}=await reservationService.createReservationEvent(
       reservationObject,
       files,
       attendeeuniversity,
       transaction
     );
+    filesToDelete=pathsimage;
+    await sendMail(email,"Verificación de correo",bodyEmail);
+    
     await transaction.commit();
     res.sendStatus(201);
   } catch (error) {
     await transaction.rollback();
+
+    if(error.sendMailFailed){
+      filesToDelete.forEach((filePath) => {
+        fs.unlinkSync(path.join(PATH_FILES_PRIVATE,filePath));
+      });
+    }
     if(error.code){
        handleErrorResponse(res,error.message,error.code);
        return;
