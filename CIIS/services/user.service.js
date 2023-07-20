@@ -16,21 +16,17 @@ const createRegisterUser = async (userObject,transaction) => {
   })
 };
 
+const getUserInfoByCode=async(code)=>{
+  const userFound=await User.findOne({
+    attributes:['name_user','lastname_user'],
+    where:{
+      code_user:code
+    }
+  });
 
-// const sequelize = require("../config/database");
-// const createPreRegisterUser = async (userObject) => {
-//     const t = await sequelize.transaction();
-//   try {
-
-//     const user = await User.create(userObject, {transaction:t});
-//     await t.commit();
-//     return user;
-//   } catch (error) {
-//     await t.rollback();
-//     throw error;
-//   }
-// };
-
+  return userFound;
+}
 module.exports = {
   createRegisterUser,
+  getUserInfoByCode
 };

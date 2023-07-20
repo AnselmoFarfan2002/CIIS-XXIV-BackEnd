@@ -13,7 +13,17 @@ routerRegister.use(fileUpload({
     tempFileDir:'/tmp/'
 }));
 
+/**
+ * En producción
+ */
+// routerRegister
+// .post('/',handleRecaptcha,uploadFile("imgvoucher"),userRegisterDTO,validateKeyTypeAttende,createPreRegisterUser);
+
+
+/**
+ * En desarrollo (desactivamos el handleRecaptcha)
+ */
 routerRegister
-.post('/',handleRecaptcha,uploadFile("imgvoucher"),userRegisterDTO,validateKeyTypeAttende,createPreRegisterUser);
+.post('/',uploadFile("imgvoucher"),userRegisterDTO,validateKeyTypeAttende,createPreRegisterUser);
 
 module.exports=routerRegister;
