@@ -16,6 +16,6 @@ module.exports = {
       process.env.KEY_RECAPTCHA || "6LeWTiMnAAAAAK1CzdpM9uIxkn3AoM42OZLpySGR",
     client_id: process.env.CLIENT_ID || "",
     client_secret_key: process.env.CLIENT_SECRET_KEY||"",
-    refresh_token_email: process.env.REFRESH_TOKEN_EMAIL||'',
+    refresh_token_email: process.env.REFRESH_TOKEN_EMAIL||"",
   },
 };
