@@ -4,7 +4,7 @@ module.exports = {
     port: process.env.SERVER_PORT || 3000,
   },
   database: {
-    host: process.env.DB_HOST || "db",
+    host: process.env.DB_HOST || "localhost",
     user: process.env.DB_USER || "usuario",
     name: process.env.DB_NAME || "app_ciis",
     password: process.env.DB_PASSWORD || "usuario",
