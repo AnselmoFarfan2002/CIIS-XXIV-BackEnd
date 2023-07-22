@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const path = require("path");
+const cookieParser = require('cookie-parser');
 const CIIS_API_ROUTES = require('./CIIS/routes/index.routes')
 const {app:configServer}=require("./CIIS/config/development.js")
 class Server{
@@ -18,6 +19,7 @@ class Server{
         this.app.set('PORT', configServer.port)
         this.app.use(cors());
         this.app.use(morgan("dev"));
+        this.app.use(cookieParser());
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: false }));
     }
