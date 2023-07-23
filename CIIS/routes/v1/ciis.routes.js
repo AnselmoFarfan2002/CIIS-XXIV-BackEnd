@@ -1,5 +1,7 @@
 const { Router } = require('express');
 const router = Router();
+const sessionRouter=require("./session.routes");
+const registrationRouter=require("./registration.routes");
 const eventRoute=require("./event.routes");
 const galleryEventRoute=require("./galleryEvent.routes");
 const typeEventRoute=require("./typeEvent.routes");
@@ -9,7 +11,9 @@ const reservationRoute=require("./reservation.routes");
 
 const handleGet = (req, res) => res.send('<h1>Hey buddy! this is an api...<br>here we do not provide user interfaces 🥴</h1>')
 
-router.get('/', handleGet)
+router.get('/',handleGet)
+router.use('/sessions',sessionRouter);
+router.use('/registrations',registrationRouter);
 router.use('/events',eventRoute);
 router.use(galleryEventRoute);
 router.use('/types-event',typeEventRoute);
