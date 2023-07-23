@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const {compare}=require("../utils/password.utils");
 const Users = require("../models/Users");
 
 const authByEmailPwd = async (email, password) => {
@@ -9,7 +9,7 @@ const authByEmailPwd = async (email, password) => {
     let iserror = 0;
     if (!user) 
         iserror = 1
-    else if (!await bcrypt.compare(password, user.password_user)) 
+    else if (!await compare(password, user.password_user)) 
         iserror = 2;
     
     return { user, iserror };

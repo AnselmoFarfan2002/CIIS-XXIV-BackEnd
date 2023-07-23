@@ -18,29 +18,42 @@ const createRegisterUser = async (userObject,transaction) => {
 };
 
 const getUserInfoByCode=async(code)=>{
-  const userFound=await User.findOne({
-    attributes:['name_user','lastname_user','email_user'],
-    where:{
-      code_user:code
+  return new Promise(async(resolve, reject) => {
+    const userFound=await User.findOne({
+      attributes:['name_user','lastname_user','email_user'],
+      where:{
+        code_user:code
+      }
+    });
+    
+    if(!userFound){
+      reject({code:404,message:"El usuario no existe"});
     }
+    resolve(userFound.toJSON());
   });
-
-  return userFound.toJSON();
 }
 
 const getInfoRoleUserByCode=async(code)=>{
-  const roleFound=await User.findOne({
-    attributes:['id_user'],
-    where:{
-      code_user:code
-    },
-    include:[{
-      model:Roles,
-      attributes:['name_role']
-    }]
-  });
 
-  return roleFound.toJSON();
+  return new Promise(async(resolve, reject) => {
+    const roleFound=await User.findOne({
+      attributes:['id_user'],
+      where:{
+        code_user:code
+      },
+      include:[{
+        model:Roles,
+        attributes:['name_role']
+      }]
+    });
+    
+    if(!roleFound){
+      reject({code:404,message:"El usuario no existe"});
+    }
+
+    resolve(roleFound.toJSON());
+  })
+
 }
 
 const getEmailByUserId=async(id)=>{

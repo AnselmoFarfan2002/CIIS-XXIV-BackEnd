@@ -99,23 +99,47 @@ const getRegistrations = async (query) => {
   };
 };
 
-const changeStatusRegistration = async (id, status) => {
-  const registration = await Reservation.findByPk(id);
+const getFilesOfReserve=async(nameFolder,idReserve)=>{
+  const folders={
+    UNIVERSITY:"dir_fileuniversity",
+    VOUCHER:"dir_voucher"
+  };
 
-  if (!registration) {
-    return 1;
-  } else {
-    await Reservation.update({ enrollment_status: status }, {
-      where: {
-        id_reservation: id
+  const folder=(folders[`${nameFolder}`])?folders[`${nameFolder}`]:'dir_voucher';
+  
+  const reserveFound=await Reservation.findOne({
+    attributes:[[folder,'dirimage']],
+    where:{
+      id_reservation:idReserve
+    },
+    raw:false
+  });
+
+  return reserveFound.toJSON();
+}
+
+const updateReservation=async(id,reservationObject,transaction)=> new Promise(async(resolve, reject) => {
+  try {
+    
+    const reservationFound=await Reservation.findOne({
+      where:{
+        id_reservation:id
       }
     });
-
-    return 0;
+  
+    if(!reservationFound){
+      reject({code:404 ,message:"No se ha encontrado la reservación"});
+      return;
+    } 
+    await reservationFound.update(reservationObject,{transaction});
+    resolve(reservationFound.toJSON());
+  } catch (error) {
+    reject(error);
   }
-};
+});
 
 module.exports = {
   getRegistrations,
-  changeStatusRegistration
+  getFilesOfReserve,
+  updateReservation
 };
