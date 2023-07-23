@@ -16,6 +16,8 @@ const ReservationDTO = require("../DTO/reservation.dto");
 const sendMail = require("../utils/sendMail");
 const bodyEmail = require("../config/bodyEmail");
 const {confirmedRegistration,deniedRegistration} = require("../utils/body.email");
+const { createRecordAudit } = require("../services/audit.log.service");
+const { getDateTime } = require("../utils/getdate.utils");
 
 const PATH_FILES_PRIVATE = path.join(__dirname, "../../uploads/private");
 
@@ -131,7 +133,7 @@ const updateEnrollmentStatus = async (req, res) => {
       transaction
     );
     const userFound = await getEmailByUserId(registrationFound.user_id);
-
+    
     // switch (status) {
     //   case "2":
     //     await sendMail(
@@ -149,7 +151,16 @@ const updateEnrollmentStatus = async (req, res) => {
     //   default:
     //     break;
     // }
+    
+    const recordAuditObject={
+      table_name:"reservation",
+      action_type:"update",
+      action_date:getDateTime(),
+      user_id:1,
+      new_data: JSON.stringify({status})
+    };
 
+    await createRecordAudit(recordAuditObject,transaction);
     await transaction.commit();
     res.status(204).send("Reserva Actualizada");
   } catch (error) {
