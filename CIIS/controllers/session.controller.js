@@ -19,6 +19,7 @@ const startSession = async (req, res) => {
             const jwt = await signToken(user,'2h',process.env.JWT_PRIVATE_KEY);
             
             const cookieOptions = {
+                sameSite: "None",
                 expires: new Date(
                     Date.now() + 1 * 24 * 60 * 60 * 1000
                 ),
