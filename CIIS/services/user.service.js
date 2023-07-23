@@ -1,3 +1,4 @@
+const Roles = require("../models/Roles");
 const User = require("../models/Users");
 
 const createRegisterUser = async (userObject,transaction) => {
@@ -18,15 +19,46 @@ const createRegisterUser = async (userObject,transaction) => {
 
 const getUserInfoByCode=async(code)=>{
   const userFound=await User.findOne({
-    attributes:['name_user','lastname_user'],
+    attributes:['name_user','lastname_user','email_user'],
     where:{
       code_user:code
     }
   });
 
-  return userFound;
+  return userFound.toJSON();
 }
+
+const getInfoRoleUserByCode=async(code)=>{
+  const roleFound=await User.findOne({
+    attributes:['id_user'],
+    where:{
+      code_user:code
+    },
+    include:[{
+      model:Roles,
+      attributes:['name_role']
+    }]
+  });
+
+  return roleFound.toJSON();
+}
+
+const getEmailByUserId=async(id)=>{
+  const userFound=await User.findOne({
+    attributes:['email_user'],
+    where:{
+      id_user:id
+    }
+  });
+  if(!userFound){
+    throw new Error({code:404 ,message:"No se ha encontrado al usuario"});
+  } 
+  return userFound.toJSON();
+}
+
 module.exports = {
   createRegisterUser,
-  getUserInfoByCode
+  getUserInfoByCode,
+  getInfoRoleUserByCode,
+  getEmailByUserId
 };

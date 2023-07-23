@@ -18,6 +18,7 @@ class Server{
     config(){
         this.app.set('PORT', configServer.port)
         this.app.use(cors());
+        this.app.use(cookieParser());
         this.app.use(morgan("dev"));
         this.app.use(cookieParser());
         this.app.use(express.json());
