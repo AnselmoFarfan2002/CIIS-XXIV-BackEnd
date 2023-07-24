@@ -10,7 +10,7 @@ const verifySession = async (req, res, next) => {
   } else {
     try {
       const { payload } = await verifyToken(jwt, process.env.JWT_PRIVATE_KEY);
-      const result = await authTokenById(payload.code_user);
+      const result = await authTokenById(payload.code);
       if (result.iserror == 1) {
         return handleErrorResponse(res, "El código no ha sido encontrado", 400);
       } else { 
@@ -23,7 +23,6 @@ const verifySession = async (req, res, next) => {
       }  
     } catch (err) {
       res.clearCookie('jwt');
-
       return handleErrorResponse(res, err);
     }
   }

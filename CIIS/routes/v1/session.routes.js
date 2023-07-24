@@ -5,6 +5,6 @@ const { startSession, endSession }=require('../../controllers/session.controller
 const { verifySession }=require("../../middlewares/verifySession");
 
 sessionRouter.post('/', userLoginDTO, startSession);
-sessionRouter.delete('/', verifySession, endSession);
+sessionRouter.delete('/', endSession);
 
 module.exports = sessionRouter;

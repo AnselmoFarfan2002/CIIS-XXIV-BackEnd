@@ -1,7 +1,7 @@
 const { authByEmailPwd } = require("../services/session.service");
 const { handleErrorResponse } = require("../middlewares/handleError");
 const { signToken } = require("../utils/jwt.utils");
-
+const { secret_key } = require("../config/development");
 const startSession = async (req, res) => {
     const { email, password } = req.body;
     
@@ -21,8 +21,9 @@ const startSession = async (req, res) => {
             const cookieOptions = {
                 sameSite: "None",
                 expires: new Date(
-                    Date.now() + 1 * 24 * 60 * 60 * 1000
+                    Date.now() + 2 * 60 * 60 * 1000
                 ),
+                maxAge:1000*60*60*2,
                 httpOnly: true // acepta http y https
             };
           
@@ -35,18 +36,24 @@ const startSession = async (req, res) => {
                 role: result.user.role_id
             });
         }
-    } catch (err) {
-        return handleErrorResponse(res, err);
-    }
+  } catch (err) {
+    return handleErrorResponse(res, err);
+  }
 };
 
 const endSession = async (req, res) => {
-    res.clearCookie('jwt');
 
-    return res.send('Cookie eliminada correctamente');
-}
+  const { jwt='' } = req.cookies;
+
+  
+  res.clearCookie("jwt");
+  if (!jwt) {
+    return handleErrorResponse(res, "Sesión Inválida", 404);
+  }
+  return res.send("Sesión eliminada correctamente");
+};
 
 module.exports = {
-    startSession,
-    endSession
+  startSession,
+  endSession,
 };

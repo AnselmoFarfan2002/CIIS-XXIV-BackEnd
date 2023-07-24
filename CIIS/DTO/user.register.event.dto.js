@@ -8,14 +8,17 @@ const Ajv = require("ajv");
 const UserRegisterEventDto = Type.Object(
   {
     name: Type.String({
+      pattern: "^[a-zA-ZáéíóúÁÉÍÓÚñÑ '-]+$",
       minLength: 1,
       errorMessage: "Debe especificar su nombre",
     }),
     firstLastname: Type.String({
+      pattern: "^[a-zA-ZáéíóúÁÉÍÓÚñÑ '-]+$",
       minLength: 1,
       errorMessage: "Debe especificar su primer apellido",
     }),
     secondLastname: Type.String({
+      pattern: "^[a-zA-ZáéíóúÁÉÍÓÚñÑ '-]+$",
       minLength: 1,
       errorMessage: "Debe especificar su segundo apellido",
     }),
