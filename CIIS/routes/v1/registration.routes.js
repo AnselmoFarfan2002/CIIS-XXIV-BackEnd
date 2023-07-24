@@ -10,7 +10,6 @@ const { checkAuth, checkRole } = require("../../middlewares/auth");
 const {
   reservationUpdateStatusDTO,
 } = require("../../DTO/reservation.update.dto");
-const { verifySession } = require("../../middlewares/verifySession");
 
 registrationRouter.patch(
   "/:idReserve/status",
