@@ -22,14 +22,10 @@ const checkAuth = async (req, res, next) => {
   } catch (error) {
     res.clearCookie("jwt");
 
-    if (typeof error.code==='number') {
+    if (typeof error.code === "number") {
       return handleErrorResponse(res, error.message, error.code);
     }
-    return handleErrorResponse(
-      res,
-      "Token inválido",
-      401
-    );
+    return handleErrorResponse(res, "Token inválido", 401);
   }
 };
 
@@ -47,7 +43,18 @@ const checkRole = (roles) => async (req, res, next) => {
   }
 };
 
+const checkSession=async(req,res,next)=>{
+  const {jwt=''}=req.cookies;
+
+  if(!jwt){
+    next()
+    return;
+  }
+
+  return handleErrorResponse(res,"Ya existe una sesión activa",409);
+}
 module.exports = {
   checkAuth,
   checkRole,
+  checkSession
 };

@@ -28,12 +28,13 @@ const getUserInfoByCode=async(code)=>{
     
     if(!userFound){
       reject({code:404,message:"El usuario no existe"});
+      return;
     }
     resolve(userFound.toJSON());
   });
 }
 
-const getInfoRoleUserByCode=async(code)=>{
+const getInfoRoleUserByCode=async(code='')=>{
 
   return new Promise(async(resolve, reject) => {
     const roleFound=await User.findOne({
@@ -46,9 +47,9 @@ const getInfoRoleUserByCode=async(code)=>{
         attributes:['name_role']
       }]
     });
-    
     if(!roleFound){
       reject({code:404,message:"El usuario no existe"});
+      return;
     }
 
     resolve(roleFound.toJSON());
@@ -57,16 +58,19 @@ const getInfoRoleUserByCode=async(code)=>{
 }
 
 const getEmailByUserId=async(id)=>{
-  const userFound=await User.findOne({
-    attributes:['email_user'],
-    where:{
-      id_user:id
-    }
-  });
-  if(!userFound){
-    throw new Error({code:404 ,message:"No se ha encontrado al usuario"});
-  } 
-  return userFound.toJSON();
+  return new Promise(async(resolve, reject) => {
+    const userFound=await User.findOne({
+      attributes:['email_user'],
+      where:{
+        id_user:id
+      }
+    });
+    if(!userFound){
+      reject({code:404 ,message:"No se ha encontrado al usuario"});
+      return;
+    } 
+    resolve(userFound.toJSON());
+  })
 }
 
 module.exports = {
