@@ -85,7 +85,8 @@ const updateEnrollmentStatus = async (req, res) => {
       table_name:"reservation",
       action_type:"update",
       action_date:getDateTime(),
-      user_id:1,
+      user_id:req.iduser,
+      record_id: idReserve,
       new_data: JSON.stringify({status})
     };
 

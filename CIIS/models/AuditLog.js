@@ -23,6 +23,10 @@ const AuditLog=sequelize.define("audit_log",{
         type:DataTypes.INTEGER,
         allowNull:false,
     },
+    record_id:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+    },
     old_data:{
         type:DataTypes.STRING,
         allowNull:true,
