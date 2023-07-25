@@ -46,7 +46,11 @@ const startSession = async (req, res) => {
 const endSession = async (req, res) => {
   const { jwt = "" } = req.cookies;
 
-  res.clearCookie("jwt");
+  res.clearCookie("jwt", {
+    sameSite: "none",
+    secure: true,
+  });
+
   if (!jwt) {
     return handleErrorResponse(res, "Sesión Inválida", 404);
   }

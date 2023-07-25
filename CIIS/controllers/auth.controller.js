@@ -5,10 +5,13 @@ const { secret_key } = require("../config/development");
 
 const checkAuthToAccesView = async (req, res) => {
   try {
-    const { jwt='' } = req.cookies;
+    const { jwt = "" } = req.cookies;
 
     if (!jwt) {
-      res.clearCookie("jwt");
+      res.clearCookie("jwt", {
+        sameSite: "none",
+        secure: true,
+      });
       handleErrorResponse(res, "Debe Iniciar Sesión. ¡Ingrese de nuevo!", 401);
       return;
     }
@@ -22,7 +25,10 @@ const checkAuthToAccesView = async (req, res) => {
       email: userInfoFound.email_user,
     });
   } catch (err) {
-    res.clearCookie("jwt");
+    res.clearCookie("jwt", {
+      sameSite: "none",
+      secure: true,
+    });
     if (err.code) {
       handleErrorResponse(res, error.message, error.code);
       return;
