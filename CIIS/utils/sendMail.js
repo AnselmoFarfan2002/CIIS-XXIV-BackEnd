@@ -1,8 +1,8 @@
 const { configoAuth2 } = require("../config/nodemailer");
 const sendMail = async (email, subject, content) => {
   return new Promise(async (resolve, reject) => {
-    const transporter = configoAuth2();
     try {
+      const transporter = await configoAuth2();
       const mailOptions = {
         from: "Pre-registro al PostMaster <noreply.test.ciis@gmail.com>",
         to: email,

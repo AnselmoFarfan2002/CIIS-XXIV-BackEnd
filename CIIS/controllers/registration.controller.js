@@ -63,23 +63,23 @@ const updateEnrollmentStatus = async (req, res) => {
     );
     const userFound = await getEmailByUserId(registrationFound.user_id);
     
-    switch (status) {
-      case "2":
-        await sendMail(
-          userFound.email_user,
-          confirmedRegistration.subject,
-          confirmedRegistration.content
-          );
-        break;
-      case "3":
-        await sendMail(
-          userFound.email_user,
-          deniedRegistration.subject,
-          deniedRegistration.content);
-        break;
-      default:
-        break;
-    }
+    // switch (status) {
+    //   case "2":
+    //     await sendMail(
+    //       userFound.email_user,
+    //       confirmedRegistration.subject,
+    //       confirmedRegistration.content
+    //       );
+    //     break;
+    //   case "3":
+    //     await sendMail(
+    //       userFound.email_user,
+    //       deniedRegistration.subject,
+    //       deniedRegistration.content);
+    //     break;
+    //   default:
+    //     break;
+    // }
     
     const recordAuditObject={
       table_name:"reservation",

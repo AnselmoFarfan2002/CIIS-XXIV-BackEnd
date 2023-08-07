@@ -10,8 +10,7 @@
 //     return date+' '+hour;
 // }
 
-function getDateTime() {
-
+const getDateTime=()=> {
   const timeZoneOffset = -5 * 60 * 60 * 1000;
   const dateMilliseconds = new Date().getTime();
   const currentTimePeru = new Date(dateMilliseconds + timeZoneOffset);
@@ -27,6 +26,20 @@ function getDateTime() {
   return datetimeFormat;
 }
 
+const getDate=()=>{
+  const timeZoneOffset = -5 * 60 * 60 * 1000;
+  const dateMilliseconds = new Date().getTime();
+  const currentTimePeru = new Date(dateMilliseconds + timeZoneOffset);
+  const anio = currentTimePeru.getFullYear();
+  const mes = String(currentTimePeru.getMonth() + 1).padStart(2, "0");
+  const dia = String(currentTimePeru.getDate()).padStart(2, "0");
+
+  const dateFormat=`${anio}-${mes}-${dia}`;
+
+  return dateFormat;
+}
+
 module.exports = {
   getDateTime,
+  getDate
 };

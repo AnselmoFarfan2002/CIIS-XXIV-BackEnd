@@ -1,13 +1,14 @@
 const { searchEventActive } = require("../services/event.service");
 const {
   searchTypeAttendeByEvent,
-} = require("../services/typeAttendee.service");
+} = require("../services/priceTypeAttendee.service");
 const { handleErrorResponse } = require("./handleError");
+const {validateExtensionsToFile}=require("../utils/upload.img");
 
 //Valida que el evento exista y que el tipo de asistente este relacionado con este
 const validateKeyTypeAttende = async (req, res, next) => {
   if (!req.query || Object.keys(req.query).length === 0 || !req.query.event) {
-    handleErrorResponse(res, "No se ha especificado el evento", 400);
+    handleErrorResponse(res, "No se ha especificado el evento", 404);
     return;
   }
 
@@ -16,22 +17,25 @@ const validateKeyTypeAttende = async (req, res, next) => {
 
   const existEvent = await searchEventActive(event);
   if (!existEvent) {
-    handleErrorResponse(res, "No se ha encontrado el evento", 400);
+    handleErrorResponse(res, "No se ha encontrado el evento", 404);
     return;
   }
 
+  // verify exists a price for type attendee and the event
   const existTypeAttendee = await searchTypeAttendeByEvent(typeattendee, event);
 
   if (!existTypeAttendee) {
     handleErrorResponse(
       res,
-      "No se ha encontrado el tipo de asistente al evento",
-      400
+      "No se ha encontrado un precio válido para este evento",
+      404
     );
     return;
   }
 
-  const { isuniversity } = existTypeAttendee;
+  req.priceTypeAttendee=existTypeAttendee.id_price_type_attendee;
+
+  const { isuniversity } = existTypeAttendee.type_attendee;
 
   if (!isuniversity) {
     req.attendeeuniversity = false;
@@ -54,6 +58,13 @@ const validateKeyTypeAttende = async (req, res, next) => {
       400
     );
 
+  if (!validateExtensionsToFile(["jpg", "jpeg", "png"], req.files["fileuniversity"])) {
+    return handleErrorResponse(
+      res,
+      "La extensión del archivo no es válida",
+      400
+    );
+  }
   req.attendeeuniversity = true;
   next();
 };

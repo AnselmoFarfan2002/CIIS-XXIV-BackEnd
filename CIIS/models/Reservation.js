@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const Users=require("./Users");
 const Events=require("./Events");
-const TypeAttendee=require("./TypeAttendee");
+const PriceTypeAttendee=require("./PriceTypeAttendee");
 
 const Reservation=sequelize.define("reservation",{
     id_reservation:{
@@ -31,9 +31,17 @@ const Reservation=sequelize.define("reservation",{
     active:{
         type:DataTypes.BOOLEAN,
         allowNull:false
+    },
+    created_at:{
+        type:DataTypes.DATE,
+        allowNull:true
+    },
+    updated_at:{
+        type:DataTypes.DATE,
+        allowNull:true
     }
 },{
-    timestamps:false
+    timestamps:false,
 });
 
 Users.hasMany(Reservation,{
@@ -52,12 +60,12 @@ Reservation.belongsTo(Events,{
     foreignKey:"event_id"
 })
 
-TypeAttendee.hasMany(Reservation,{
-    foreignKey:"type_attendee_id"
+PriceTypeAttendee.hasMany(Reservation,{
+    foreignKey:"price_type_attendee_id"
 })
 
-Reservation.belongsTo(TypeAttendee,{
-    foreignKey:"type_attendee_id"
+Reservation.belongsTo(PriceTypeAttendee,{
+    foreignKey:"price_type_attendee_id"
 })
 
 module.exports=Reservation;

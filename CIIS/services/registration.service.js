@@ -2,6 +2,7 @@ const { Op, Sequelize } = require("sequelize");
 const Reservation = require("../models/Reservation");
 const Events = require("../models/Events");
 const Users = require("../models/Users");
+const PriceTypeAttendee=require("../models/PriceTypeAttendee");
 
 const getRegistrations = async (query) => {
   if (!Object.keys(query).length) {
@@ -10,6 +11,11 @@ const getRegistrations = async (query) => {
         {
           model: Users,
           attributes: ['id_user', 'name_user', 'lastname_user', 'email_user', 'dni_user', 'phone_user']
+        },
+        {
+          model:PriceTypeAttendee,
+          attributes:['price_attendee'],
+          required:true
         }
       ]
     });
@@ -17,14 +23,15 @@ const getRegistrations = async (query) => {
     const registrationsMap = registrations.map((registration) => {
       return {
         id: registration.id_reservation,
-        typeattendee: registration.type_attendee_id,
+        typeattendee: registration.price_type_attendee_id,
         enrollmentstatus: registration.enrollment_status,
         numvoucher: registration.num_voucher,
         name: registration.user.name_user,
         lastname: registration.user.lastname_user,
         email: registration.user.email_user,
         dni: registration.user.dni_user,
-        phone: registration.user.phone_user
+        phone: registration.user.phone_user,
+        price:registration.price_type_attendee.price_attendee
       };
     });
 
@@ -70,6 +77,11 @@ const getRegistrations = async (query) => {
         model: Users,
         attributes: ['id_user', 'name_user', 'lastname_user', 'email_user', 'dni_user', 'phone_user'],
         where: whereUsers,
+      },
+      {
+        model:PriceTypeAttendee,
+        attributes:['price_attendee'],
+        required:true
       }
     ],
     offset: parseInt(offset),
@@ -81,14 +93,15 @@ const getRegistrations = async (query) => {
   const rowsMap = rows.map((registration) => {
     return {
       id: registration.id_reservation,
-      typeattendee: registration.type_attendee_id,
+      typeattendee: registration.price_type_attendee_id,
       enrollmentstatus: registration.enrollment_status,
       numvoucher: registration.num_voucher,
       name: registration.user.name_user,
       lastname: registration.user.lastname_user,
       email: registration.user.email_user,
       dni: registration.user.dni_user,
-      phone: registration.user.phone_user
+      phone: registration.user.phone_user,
+      price:registration.price_type_attendee.price_attendee
     };
   });
 

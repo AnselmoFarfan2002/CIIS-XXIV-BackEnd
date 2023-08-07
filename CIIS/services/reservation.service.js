@@ -20,17 +20,17 @@ const createReservationEvent = async (
         "jpeg",
         "png",
       ]);
-
+      
+      objectDir.push(voucherUploaded.filename);
       pathTemp=voucherUploaded.filename;
 
       if (!attendeeuniversity) {
         reservationCreated.dir_voucher = voucherUploaded.filename;
         await reservationCreated.save({ transaction });
-        resolve({ ok: true });
+        resolve({ ok: true,objectDir });
         return;
       }
       const { fileuniversity } = files;
-      console.log(voucherUploaded.filename)
       const fileuniversityUploaded = await uploadImage(
         fileuniversity,
         "file-university",
@@ -40,7 +40,7 @@ const createReservationEvent = async (
       reservationCreated.dir_voucher = voucherUploaded.filename;
       reservationCreated.dir_fileuniversity = fileuniversityUploaded.filename;
       await reservationCreated.save({ transaction });
-      objectDir.push(voucherUploaded.filename);
+
       objectDir.push(fileuniversityUploaded.filename);
 
       resolve({ ok: true,objectDir });

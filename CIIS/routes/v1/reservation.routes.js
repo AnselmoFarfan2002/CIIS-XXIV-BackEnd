@@ -21,19 +21,24 @@ routerRegister.use(
 /**
  * En producción
  */
-routerRegister.post(
-  "/",
-  handleRecaptcha,
-  uploadFile("imgvoucher"),
-  userRegisterDTO,
-  validateKeyTypeAttende,
-  createPreRegisterUser
-);
+// routerRegister.post(
+//   "/",
+//   handleRecaptcha,
+//   uploadFile("imgvoucher"),
+//   userRegisterDTO,
+//   validateKeyTypeAttende,
+//   createPreRegisterUser
+// );
 
 /**
  * En desarrollo (desactivamos el handleRecaptcha)
  */
-// routerRegister
-// .post('/',uploadFile("imgvoucher"),userRegisterDTO,validateKeyTypeAttende,createPreRegisterUser);
+routerRegister.post(
+  "/",
+  uploadFile("imgvoucher", ["jpg", "jpeg", "png"]),
+  userRegisterDTO,
+  validateKeyTypeAttende,
+  createPreRegisterUser
+);
 
 module.exports = routerRegister;

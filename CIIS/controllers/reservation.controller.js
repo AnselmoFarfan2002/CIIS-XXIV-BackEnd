@@ -31,10 +31,9 @@ const createPreRegisterUser = async (req, res) => {
       phone,
       career,
       studycenter,
-      numvoucher,
-      typeattendee,
+      numvoucher
     } = req.body;
-    const { files, attendeeuniversity = false } = req;
+    const { files, attendeeuniversity = false ,priceTypeAttendee} = req;
     const { event } = req.query;
     const userDTO = new UserDTO(
       name,
@@ -57,19 +56,19 @@ const createPreRegisterUser = async (req, res) => {
       (statusRegister = 1),
       (user = userCreated.id_user),
       event,
-      typeattendee,
+      priceTypeAttendee,
       (isActive = 1)
     );
 
-    const { objectDir: pathsimage } =
+    const { objectDir} =
       await reservationService.createReservationEvent(
         reservationObject,
         files,
         attendeeuniversity,
         transaction
       );
-    filesToDelete = pathsimage;
-    await sendMail(email,"Verificación de correo",bodyEmail);
+    filesToDelete = objectDir;
+    //await sendMail(email,"Verificación de correo",bodyEmail);
 
     await transaction.commit();
     res.sendStatus(201);
@@ -82,8 +81,7 @@ const createPreRegisterUser = async (req, res) => {
       });
     }
     if (error.code) {
-      handleErrorResponse(res, error.message, error.code);
-      return;
+      return handleErrorResponse(res, error.message, error.code);
     }
     return handleHttpError(res, error);
   }

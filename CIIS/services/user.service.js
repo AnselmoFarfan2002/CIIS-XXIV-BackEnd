@@ -20,7 +20,7 @@ const createRegisterUser = async (userObject,transaction) => {
 const getUserInfoByCode=async(code)=>{
   return new Promise(async(resolve, reject) => {
     const userFound=await User.findOne({
-      attributes:['name_user','lastname_user','email_user'],
+      attributes:['id_user','name_user','lastname_user','email_user'],
       where:{
         code_user:code
       }
@@ -73,9 +73,26 @@ const getEmailByUserId=async(id)=>{
   })
 }
 
+const getUserInfoByDNI=(dni)=>{
+  return new Promise(async(resolve, reject) => {
+    const userFound=await User.findOne({
+      attributes:['id_user','name_user','lastname_user','email_user'],
+      where:{
+        dni_user:dni
+      }
+    });
+    
+    if(!userFound){
+      reject({code:404,message:"El usuario no existe"});
+      return;
+    }
+    resolve(userFound.toJSON());
+  });
+}
 module.exports = {
   createRegisterUser,
   getUserInfoByCode,
   getInfoRoleUserByCode,
-  getEmailByUserId
+  getEmailByUserId,
+  getUserInfoByDNI
 };
