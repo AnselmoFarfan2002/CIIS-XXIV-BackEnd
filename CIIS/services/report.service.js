@@ -7,7 +7,7 @@ const PriceTypeAttendee = require("../models/PriceTypeAttendee");
 sequelize.query
 const getRegistrationsToUpload = async (event,status) => {
   return new Promise(async (resolve, reject) => {
-    const query = `CALL reportsReservationsByEvent2(:event,:status)`;
+    const query = `CALL reportsReservationsByEvent(:event,:status)`;
     const replacements = { event,status };
     try {
       const results = await sequelize.query(query, {
