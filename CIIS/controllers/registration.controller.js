@@ -80,7 +80,6 @@ const updateEnrollmentStatus = async (req, res) => {
     //   default:
     //     break;
     // }
-    
     const recordAuditObject={
       table_name:"reservation",
       action_type:"update",

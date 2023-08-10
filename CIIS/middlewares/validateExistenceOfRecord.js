@@ -2,8 +2,9 @@ const { searchEventActive } = require("../services/event.service");
 const {
   searchTypeAttendeByEvent,
 } = require("../services/priceTypeAttendee.service");
-const { handleErrorResponse } = require("./handleError");
+const { handleErrorResponse,handleHttpError } = require("./handleError");
 const {validateExtensionsToFile}=require("../utils/upload.img");
+const {getUserByDniOrCode}=require("../services/user.service");
 
 //Valida que el evento exista y que el tipo de asistente este relacionado con este
 const validateKeyTypeAttende = async (req, res, next) => {
@@ -69,6 +70,24 @@ const validateKeyTypeAttende = async (req, res, next) => {
   next();
 };
 
+const validateExistUser=async(req,res,next)=>{
+  try{
+    const {user}=req.query;
+
+    const userFound=await getUserByDniOrCode(user);
+
+    req.idUser=userFound.id_user;
+
+    next();
+  }catch(error){
+    if (error.code) {
+      return handleErrorResponse(res, error.message, error.code);
+    }
+    return handleHttpError(res, error);
+  }
+}
+
 module.exports = {
   validateKeyTypeAttende,
+  validateExistUser
 };

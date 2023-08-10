@@ -1,3 +1,4 @@
+const {Op}=require("sequelize");
 const Roles = require("../models/Roles");
 const User = require("../models/Users");
 
@@ -89,10 +90,32 @@ const getUserInfoByDNI=(dni)=>{
     resolve(userFound.toJSON());
   });
 }
+
+const getUserByDniOrCode=async(code)=>{
+  return new Promise(async(resolve, reject) => {
+    const userFound=await User.findOne({
+      attributes:['id_user','name_user','lastname_user','email_user'],
+      where:{
+        [Op.or]:[
+          {dni_user:code},
+          {code_user:code}
+        ]
+      }
+    });
+
+    if(!userFound){
+      reject({code:404,message:"El usuario no existe"});
+      return;
+    }
+    resolve(userFound.toJSON());
+  })
+}
+
 module.exports = {
   createRegisterUser,
   getUserInfoByCode,
   getInfoRoleUserByCode,
   getEmailByUserId,
-  getUserInfoByDNI
+  getUserInfoByDNI,
+  getUserByDniOrCode
 };
