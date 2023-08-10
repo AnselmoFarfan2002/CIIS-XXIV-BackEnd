@@ -40,7 +40,7 @@ const getReportsRegistrations = async (req, res) => {
       worksheet.addRow(item);
     });
 
-    res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
+    res.setHeader('Content-Disposition', 'attachment; filename=reports.xlsx');
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
     // Generar el archivo Excel y enviarlo como descarga
