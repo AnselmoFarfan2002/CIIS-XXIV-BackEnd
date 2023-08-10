@@ -1,9 +1,8 @@
-const {Router}=require("express");
-const routerTypeEvent=Router();
-const {getTypeEvents,getEventsByTypeEvent}=require("../../controllers/typeEvent.controller");
+const { Router } = require("express");
+const routerTypeEvent = Router();
+const { getTypeEvents, getEventsByTypeEvent } = require("../../controllers/typeEvent.controller");
 
 routerTypeEvent
-.get('/',getTypeEvents);
-
+.get('/', getTypeEvents);
 
 module.exports=routerTypeEvent;

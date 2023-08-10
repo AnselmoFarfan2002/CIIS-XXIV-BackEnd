@@ -1,5 +1,26 @@
+const Reservation = require("../models/Reservation");
 const Roles = require("../models/Roles");
 const User = require("../models/Users");
+
+const searchUserByReservation = async (id_reservation) => {  
+  const reservation = await Reservation.findOne({
+    where: {
+      id_reservation: id_reservation,
+    },
+    include: User
+  });
+
+  console.log("reservationreservationreservation service")
+  console.log(reservation)
+  console.log("reservation.userreservation.userreservation.user service")
+  console.log(reservation.user)
+
+  if (!reservation || !reservation.user) {
+    throw new Error("No se encontró la reservación");
+  }
+
+  return (reservation.user).toJSON();
+};
 
 const createRegisterUser = async (userObject,transaction) => {
   return new Promise(async(resolve, reject) => {
@@ -89,10 +110,33 @@ const getUserInfoByDNI=(dni)=>{
     resolve(userFound.toJSON());
   });
 }
+
+const updateUser = async (id, userObject, transaction) => new Promise(async (resolve, reject) => {
+  try {
+    const userFound = await User.findOne({
+      where: {
+        id_user: id
+      }
+    });
+
+    if (!userFound) {
+      reject({ code: 404, message: "No se ha encontrado el usuario" });
+      return;
+    }
+
+    await userFound.update(userObject, { transaction });
+    resolve(userFound.toJSON());
+  } catch (error) {
+    reject(error);
+  }
+});
+
 module.exports = {
+  searchUserByReservation,
   createRegisterUser,
   getUserInfoByCode,
   getInfoRoleUserByCode,
   getEmailByUserId,
-  getUserInfoByDNI
+  getUserInfoByDNI,
+  updateUser
 };

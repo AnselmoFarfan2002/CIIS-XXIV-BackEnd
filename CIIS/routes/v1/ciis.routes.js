@@ -17,7 +17,7 @@ router.use('/registrations',registrationRouter);
 router.use('/events',eventRoute);
 router.use(galleryEventRoute);
 router.use('/types-event',typeEventRoute);
-router.use('/user',userRoute);
+router.use('/users',userRoute);
 router.use('/register',reservationRoute);
 
 module.exports = router;
