@@ -10,11 +10,6 @@ const searchUserByReservation = async (id_reservation) => {
     include: User
   });
 
-  console.log("reservationreservationreservation service")
-  console.log(reservation)
-  console.log("reservation.userreservation.userreservation.user service")
-  console.log(reservation.user)
-
   if (!reservation || !reservation.user) {
     throw new Error("No se encontró la reservación");
   }

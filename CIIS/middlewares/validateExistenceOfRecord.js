@@ -70,49 +70,52 @@ const validateKeyTypeAttende = async (req, res, next) => {
 };
 
 const validateFileVoucher = async (req, res, next) => {
-	if(!req.files["filevoucher"]) {
+	if(!req.files) {
 		next();
-	}
-
-	if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["filevoucher"])) {
-    return handleErrorResponse(
-      res,
-      "La extensión del archivo no es válido",
-      400
-    );
   }
-  next();
+  else if(!req.files["filevoucher"]) {
+		next();
+	} else {
+    if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["filevoucher"])) {
+      return handleErrorResponse(
+        res,
+        "La extensión del archivo no es válido",
+        400
+      );
+    }
+    next();
+  }
 }
 
 const validateFileUniversity = async (req, res, next) => {
-  const { idReserve } = req.params;
-  
-  const existTypeAttendee = await searchTypeAttendeByReservation(idReserve);
-  
-  if (!existTypeAttendee) {
-    handleErrorResponse(res, "No se ha encontrado el tipo de asistente", 404);
-    return;
+  if(!req.files) {
+		next();
   }
-  
-  console.log("existTypeAttendeeexistTypeAttendeeexistTypeAttendee")
-  console.log(existTypeAttendee)
-
-  const { isuniversity } = existTypeAttendee;
-  console.log("isuniversityisuniversityisuniversity")
-  console.log(isuniversity)
-
-  if(isuniversity) {
-    if(!req.files["fileuniversity"]) {
-      reject();
+  else if(!req.files["fileuniversity"]) {
+		next();
+  } else {
+    const { idReserve } = req.params;
+    
+    const existTypeAttendee = await searchTypeAttendeByReservation(idReserve);
+    if (!existTypeAttendee) {
+      handleErrorResponse(res, "No se ha encontrado el tipo de asistente", 404);
+      return;
     }
-  }
+    
+    const { isuniversity } = existTypeAttendee;
+    if(!isuniversity) {
+      if(req.files["fileuniversity"]) {
+        return handleErrorResponse(res, "No debe enviarse una matrícula si es público general", 400);
+      }
+    } else {
+      if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["fileuniversity"])) {
+        return handleErrorResponse(res, "La extensión del archivo no es válido", 400);
+      }
+    }
 
-	if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["fileuniversity"])) {
-    return handleErrorResponse(res, "La extensión del archivo no es válido", 400);
+    req.attendeeuniversity = isuniversity;
+    next();
   }
-
-  req.attendeeuniversity = isuniversity;
-  next();
 }
 
 module.exports = {

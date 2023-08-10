@@ -109,50 +109,55 @@ const updateEnrollmentStatus = async (req, res) => {
 const updateRegistrationObserved = async (req, res) => {
   let filesToDelete = [];
   const transaction = await sequelize.transaction();
+
   try {
     const { idReserve } = req.params;
     const { name, lastname, email, dni, phone } = req.body;
     const { files, attendeeuniversity } = req;
-    console.log("filesfilesfiles")
-    console.log(files)
-    console.log("attendeeuniversityattendeeuniversityattendeeuniversity")
-    console.log(attendeeuniversity)
-
-    const userObject = {};
-    if (name !== undefined) userObject.name_user = name;
-    if (lastname !== undefined) userObject.lastname_user = lastname;
-    if (email !== undefined) userObject.email_user = email;
-    if (dni !== undefined) userObject.dni_user = dni;
-    if (phone !== undefined) userObject.phone_user = phone;
-
-    const userFound = await userService.searchUserByReservation(idReserve);
-    console.log("userFounduserFounduserFound")
-    console.log(userFound)
     
-    const userUpdated = await userService.updateUser(userFound.id_user, userObject, transaction);
-    console.log("userUpdateduserUpdateduserUpdated")
-    console.log(userUpdated)
+    if (Object.keys(req.body).length > 0) {
+      const userObject = {};
+      if (name !== undefined) userObject.name_user = name;
+      if (lastname !== undefined) userObject.lastname_user = lastname;
+      if (email !== undefined) userObject.email_user = email;
+      if (dni !== undefined) userObject.dni_user = dni;
+      if (phone !== undefined) userObject.phone_user = phone;
+  
+      const userFound = await userService.searchUserByReservation(idReserve);
+      await userService.updateUser(userFound.id_user, userObject, transaction);
+  
+      const recordAuditObject1 = {
+        table_name: "user",
+        action_type: "update",
+        action_date: getDateTime(),
+        user_id: req.iduser,
+        record_id: userFound.id_user,
+        new_data: JSON.stringify( userObject )
+      };
+  
+      await createRecordAudit(recordAuditObject1, transaction);  
+    }
 
-    const reservationObject = {};
-    reservationObject.dir_voucher = (filevoucher = "temp");
+    if (files != null) {
+      const reservationObject = {};
+      reservationObject.dir_voucher = (filevoucher = "temp");
 
-    const { objectDir } = await reservationService.updateReservationEvent(idReserve, reservationObject, files, attendeeuniversity, transaction);
-    console.log("objectDirobjectDirobjectDir")
-    console.log(objectDir)
+      const { objectDir } = await reservationService.updateReservationEvent(idReserve, reservationObject, files, attendeeuniversity, transaction);
 
-    const recordAuditObject = {
-      table_name: "reservation",
-      action_type: "update",
-      action_date: getDateTime(),
-      user_id: req.iduser,
-      record_id: req.iduser,
-      new_data: JSON.stringify( reservationObject )
-    };
+      const recordAuditObject = {
+        table_name: "reservation",
+        action_type: "update",
+        action_date: getDateTime(),
+        user_id: req.iduser,
+        record_id: idReserve,
+        new_data: JSON.stringify( reservationObject )
+      };
 
-    await createRecordAudit(recordAuditObject, transaction);
+      await createRecordAudit(recordAuditObject, transaction);
 
-    filesToDelete = objectDir;
-
+      filesToDelete = objectDir;
+    }
+    
     await transaction.commit();
     res.sendStatus(204);
   } catch (err) {
