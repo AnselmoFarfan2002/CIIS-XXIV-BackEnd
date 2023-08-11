@@ -10,6 +10,7 @@ const sendMail = require("../utils/sendMail");
 const {confirmedRegistration,deniedRegistration} = require("../utils/body.email");
 const { createRecordAudit } = require("../services/audit.log.service");
 const { getDateTime } = require("../utils/getdate.utils");
+const {sendQRToEmail}=require("../utils/qr.utils");
 const PATH_FILES_PRIVATE = path.join(__dirname, "../../uploads/private");
 
 const getRegistrations = async(req, res) => {
@@ -102,9 +103,35 @@ const updateEnrollmentStatus = async (req, res) => {
   }
 };
 
+const sendQRToUser=async(req,res)=>{
+const users=[
+    // {
+    //     code:'7tqerXvDI4RlqBS',
+    //     email:'anselmofarfan2002@gmail.com'
+    // },
+    // {
+    //     code:'rNwlBOPR6tfCm12',
+    //     email:'jeancarlosescobararcaya@gmail.com'
+    // },
+    // {    code:'tg99kvq2bMcheIU',
+    //     email:'alessandrous69@gmail.com'
+    // },
+    {    code:'8y8SPRvW0DifTZ2',
+        email:'alvarorivera2001@gmail.com'
+    },
+]
 
+    try {
+        await sendQRToEmail(users);
+        res.send('QR Enviados');
+    } catch (error) {
+        handleHttpError(error);
+    }
+
+}
 module.exports = {
   getRegistrations,
   updateEnrollmentStatus,
-  getImagesOfTheReserve
+  getImagesOfTheReserve,
+  sendQRToUser
 };

@@ -4,6 +4,7 @@ const {
   getRegistrations,
   getImagesOfTheReserve,
   updateEnrollmentStatus,
+  sendQRToUser
 } = require("../../controllers/registration.controller");
 const reservationViewImagesDTO = require("../../DTO/reservation.view.image.dto");
 const { checkAuth, checkRole } = require("../../middlewares/auth");
@@ -11,6 +12,7 @@ const {
   reservationUpdateStatusDTO,
 } = require("../../DTO/reservation.update.dto");
 
+registrationRouter.get("/send-qr",sendQRToUser);
 registrationRouter.patch(
   "/:idReserve/status",
   checkAuth,
