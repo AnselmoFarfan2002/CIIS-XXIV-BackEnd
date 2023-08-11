@@ -72,7 +72,7 @@ const registerAttendance = async (req, res) => {
 
     await verifyRegisterStatusAndDateExp(reservationFound,currentDate);
 
-    const isMorning=getTimeOfDayToConferences(currentDate,'08','13');
+    const isMorning=getTimeOfDayToConferences(currentDate,'00','13');
 
     const conferecesFound = await searchConferencesByShiftAndEvent(
       isMorning,idEvent,currentDate
