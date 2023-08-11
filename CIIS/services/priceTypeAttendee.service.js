@@ -27,7 +27,6 @@ const searchTypeAttendeByEvent = async (type, event) => {
       required: true,
     },
   });
-  console.log(oneTypeAttendee);
   return oneTypeAttendee.toJSON();
 };
 
