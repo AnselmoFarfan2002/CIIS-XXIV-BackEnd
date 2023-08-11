@@ -1,16 +1,18 @@
 const { Router } = require("express");
+const fileUpload = require("express-fileupload");
 const registrationRouter = Router();
 const {
   getRegistrations,
   getImagesOfTheReserve,
   updateEnrollmentStatus,
-  sendQRToUser
+  updateRegistrationObserved,
 } = require("../../controllers/registration.controller");
-const reservationViewImagesDTO = require("../../DTO/reservation.view.image.dto");
 const { checkAuth, checkRole } = require("../../middlewares/auth");
-const {
-  reservationUpdateStatusDTO,
-} = require("../../DTO/reservation.update.dto");
+const uploadFile = require("../../middlewares/upload.file");
+const { validateFileVoucher, validateFileUniversity } = require("../../middlewares/validateExistenceOfRecord");
+const reservationViewImagesDTO = require("../../DTO/reservation.view.image.dto");
+const { reservationUpdateStatusDTO } = require("../../DTO/reservation.update.dto");
+const userUpdateDTO = require("../../DTO/user.update.event.dto");
 
 registrationRouter.get("/send-qr",sendQRToUser);
 registrationRouter.patch(
@@ -33,4 +35,21 @@ registrationRouter.get(
   checkRole(["Administrador"]),
   getRegistrations
 );
+registrationRouter.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
+registrationRouter.put(
+  "/:idReserve",
+  checkAuth,
+  checkRole(["Administrador"]),
+  uploadFile("filevoucher", ["jpg", "jpeg", "png"]),
+  userUpdateDTO,
+  validateFileVoucher,
+  validateFileUniversity,
+  updateRegistrationObserved
+);
+
 module.exports = registrationRouter;

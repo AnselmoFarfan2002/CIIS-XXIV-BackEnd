@@ -1,12 +1,13 @@
 const { searchEventActive } = require("../services/event.service");
 const {
-  searchTypeAttendeByEvent,
+  searchTypeAttendeByReservation,
 } = require("../services/priceTypeAttendee.service");
+const {validateExtensionsToFile} = require("../utils/upload.img");
 const { handleErrorResponse,handleHttpError } = require("./handleError");
 const {validateExtensionsToFile}=require("../utils/upload.img");
 const {getUserByDniOrCode}=require("../services/user.service");
 
-//Valida que el evento exista y que el tipo de asistente este relacionado con este
+// Valida que el evento exista y que el tipo de asistente este relacionado con este
 const validateKeyTypeAttende = async (req, res, next) => {
   if (!req.query || Object.keys(req.query).length === 0 || !req.query.event) {
     handleErrorResponse(res, "No se ha especificado el evento", 404);
@@ -70,6 +71,53 @@ const validateKeyTypeAttende = async (req, res, next) => {
   next();
 };
 
+
+const validateFileVoucher = async (req, res, next) => {
+	if(!req.files["filevoucher"]) {
+		next();
+	}
+
+	if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["filevoucher"])) {
+    return handleErrorResponse(
+      res,
+      "La extensión del archivo no es válido",
+      400
+    );
+  }
+  next();
+}
+
+const validateFileUniversity = async (req, res, next) => {
+  const { idReserve } = req.params;
+  
+  const existTypeAttendee = await searchTypeAttendeByReservation(idReserve);
+  
+  if (!existTypeAttendee) {
+    handleErrorResponse(res, "No se ha encontrado el tipo de asistente", 404);
+    return;
+  }
+  
+  console.log("existTypeAttendeeexistTypeAttendeeexistTypeAttendee")
+  console.log(existTypeAttendee)
+
+  const { isuniversity } = existTypeAttendee;
+  console.log("isuniversityisuniversityisuniversity")
+  console.log(isuniversity)
+
+  if(isuniversity) {
+    if(!req.files["fileuniversity"]) {
+      reject();
+    }
+  }
+
+	if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["fileuniversity"])) {
+    return handleErrorResponse(res, "La extensión del archivo no es válido", 400);
+  }
+
+  req.attendeeuniversity = isuniversity;
+  next();
+}
+
 const validateExistUser=async(req,res,next)=>{
   try{
     const {user}=req.query;
@@ -88,6 +136,9 @@ const validateExistUser=async(req,res,next)=>{
 }
 
 module.exports = {
+  validateFileVoucher,
+  validateFileUniversity,
   validateKeyTypeAttende,
   validateExistUser
 };
+

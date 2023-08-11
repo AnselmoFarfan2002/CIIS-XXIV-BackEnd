@@ -1,13 +1,16 @@
 const path = require("path");
 const fs = require("fs");
 const sequelize = require("../config/database");
-const {getEmailByUserId,
+const { 
+  getEmailByUserId,
 } = require("../services/user.service");
 const registrationService = require("../services/registration.service");
+const reservationService = require("../services/reservation.service");
+const userService = require("../services/user.service");
 const { handleHttpError, handleErrorResponse } = require("../middlewares/handleError");
 const ReservationDTO = require("../DTO/reservation.dto");
 const sendMail = require("../utils/sendMail");
-const {confirmedRegistration,deniedRegistration} = require("../utils/body.email");
+const { confirmedRegistration, deniedRegistration } = require("../utils/body.email");
 const { createRecordAudit } = require("../services/audit.log.service");
 const { getDateTime } = require("../utils/getdate.utils");
 const {sendQRToEmail}=require("../utils/qr.utils");
@@ -103,6 +106,61 @@ const updateEnrollmentStatus = async (req, res) => {
   }
 };
 
+const updateRegistrationObserved = async (req, res) => {
+  let filesToDelete = [];
+  const transaction = await sequelize.transaction();
+  try {
+    const { idReserve } = req.params;
+    const { name, lastname, email, dni, phone } = req.body;
+    const { files, attendeeuniversity } = req;
+    console.log("filesfilesfiles")
+    console.log(files)
+    console.log("attendeeuniversityattendeeuniversityattendeeuniversity")
+    console.log(attendeeuniversity)
+
+    const userObject = {};
+    if (name !== undefined) userObject.name_user = name;
+    if (lastname !== undefined) userObject.lastname_user = lastname;
+    if (email !== undefined) userObject.email_user = email;
+    if (dni !== undefined) userObject.dni_user = dni;
+    if (phone !== undefined) userObject.phone_user = phone;
+
+    const userFound = await userService.searchUserByReservation(idReserve);
+    console.log("userFounduserFounduserFound")
+    console.log(userFound)
+    
+    const userUpdated = await userService.updateUser(userFound.id_user, userObject, transaction);
+    console.log("userUpdateduserUpdateduserUpdated")
+    console.log(userUpdated)
+
+    const reservationObject = {};
+    reservationObject.dir_voucher = (filevoucher = "temp");
+
+    const { objectDir } = await reservationService.updateReservationEvent(idReserve, reservationObject, files, attendeeuniversity, transaction);
+    console.log("objectDirobjectDirobjectDir")
+    console.log(objectDir)
+
+    const recordAuditObject = {
+      table_name: "reservation",
+      action_type: "update",
+      action_date: getDateTime(),
+      user_id: req.iduser,
+      record_id: req.iduser,
+      new_data: JSON.stringify( reservationObject )
+    };
+
+    await createRecordAudit(recordAuditObject, transaction);
+
+    filesToDelete = objectDir;
+
+    await transaction.commit();
+    res.sendStatus(204);
+  } catch (err) {
+    await transaction.rollback();
+    return handleErrorResponse(res, err);
+  }
+};
+
 const sendQRToUser=async(req,res)=>{
 const users=[
     // {
@@ -131,7 +189,9 @@ const users=[
 }
 module.exports = {
   getRegistrations,
+  getImagesOfTheReserve,
   updateEnrollmentStatus,
+  updateRegistrationObserved,
   getImagesOfTheReserve,
   sendQRToUser
 };
