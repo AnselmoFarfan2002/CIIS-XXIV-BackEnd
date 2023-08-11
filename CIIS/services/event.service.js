@@ -33,12 +33,23 @@ const getEvents = async (query) => {
 };
 
 const getOneEvent = async (id) => {
-  const event = await Event.findOne({
-    where: {
-      id_event:id,
-    },
-  });
-  return event;
+
+  return new Promise(async(resolve, reject) => {
+    const event = await Event.findOne({
+      where: {
+        id_event:id,
+      },
+    });
+
+    if(!event){
+      reject({
+        code:404,
+        message:"El evento no existe"
+      });
+      return;
+    }
+    return event.toJSON();
+  })
 };
 
 const createEvent = async (eventObject) => {

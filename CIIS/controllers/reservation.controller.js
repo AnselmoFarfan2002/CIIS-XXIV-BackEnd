@@ -68,7 +68,7 @@ const createPreRegisterUser = async (req, res) => {
         transaction
       );
     filesToDelete = objectDir;
-    //await sendMail(email,"Verificación de correo",bodyEmail);
+    await sendMail(email,"Verificación de correo",bodyEmail);
 
     await transaction.commit();
     res.sendStatus(201);

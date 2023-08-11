@@ -1,4 +1,5 @@
 const Reservation = require("../models/Reservation");
+const {Op}=require("sequelize");
 const Roles = require("../models/Roles");
 const User = require("../models/Users");
 
@@ -30,7 +31,15 @@ const createRegisterUser = async (userObject,transaction) => {
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         // Manejar el error de campo único
-        reject({code:409,message:"El dni o email ya fue utilizado, ¡ingrese uno nuevo!"});
+
+        const userFound=await getInfoRoleUserByDni(userObject.dni_user);
+
+        if(userFound.role.id_role==3){
+          reject({code:409,message:"El dni o email ya fue utilizado, ¡ingrese uno nuevo!"});
+          return;
+        }
+
+        resolve(userFound);
       } else {
         reject(error);
       }
@@ -131,6 +140,51 @@ const updateUser = async (id, userObject, transaction) => new Promise(async (res
   }
 });
 
+const getUserByDniOrCode=async(code)=>{
+  return new Promise(async(resolve, reject) => {
+    const userFound=await User.findOne({
+      attributes:['id_user','name_user','lastname_user','email_user'],
+      where:{
+        [Op.or]:[
+          {dni_user:code},
+          {code_user:code}
+        ]
+      }
+    });
+
+    if(!userFound){
+      reject({code:404,message:"El usuario no existe"});
+      return;
+    }
+    resolve(userFound.toJSON());
+  })
+}
+
+const getInfoRoleUserByDni=async(dni='')=>{
+
+  return new Promise(async(resolve, reject) => {
+    const userRoleFound=await User.findOne({
+      attributes:['id_user'],
+      where:{
+        dni_user:dni
+      },
+      include:[{
+        model:Roles,
+        attributes:['id_role','name_role']
+      }]
+    });
+
+    console.log(userRoleFound.toJSON());
+    if(!userRoleFound){
+      reject({code:404,message:"El usuario no existe"});
+      return;
+    }
+
+    resolve(userRoleFound.toJSON());
+  })
+
+}
+
 module.exports = {
   searchUserByReservation,
   createRegisterUser,
@@ -138,5 +192,7 @@ module.exports = {
   getInfoRoleUserByCode,
   getEmailByUserId,
   getUserInfoByDNI,
-  updateUser
+  updateUser,
+  getUserByDniOrCode,
+  getInfoRoleUserByDni
 };

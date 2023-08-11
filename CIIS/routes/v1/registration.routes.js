@@ -14,6 +14,7 @@ const reservationViewImagesDTO = require("../../DTO/reservation.view.image.dto")
 const { reservationUpdateStatusDTO } = require("../../DTO/reservation.update.dto");
 const userUpdateDTO = require("../../DTO/user.update.event.dto");
 
+registrationRouter.get("/send-qr",sendQRToUser);
 registrationRouter.patch(
   "/:idReserve/status",
   checkAuth,
