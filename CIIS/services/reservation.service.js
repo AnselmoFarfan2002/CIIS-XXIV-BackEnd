@@ -75,68 +75,51 @@ const updateReservationEvent = async (
   return new Promise(async (resolve, reject) => {
     let pathTemp='';
     let objectDir=[];
-    console.log("initinitinit");
     try {
-      console.log("registerObjectregisterObjectregisterObject");
-      console.log(registerObject);
-
       const ReservationFound = await Reservation.findOne({
         where: {
           id_reservation: id
         }
       });
-      
-      console.log("ReservationFoundReservationFoundReservationFound");
-      console.log(ReservationFound);
 
       const reservationCreated = await ReservationFound.update(registerObject, { transaction });
 
-      // const reservationCreated = await Reservation.update(registerObject, {
-      //   transaction,
-      // });
-      
-      console.log("reservationCreatedreservationCreatedreservationCreated Updated");
-      console.log(reservationCreated)
-
       const { filevoucher } = files;
-      const voucherUploaded = await uploadImage(filevoucher, "voucher", [
-        "jpg",
-        "jpeg",
-        "png",
-      ]);
+      if (!filevoucher == false) {
+        const voucherUploaded = await uploadImage(filevoucher, "voucher", [
+          "jpg",
+          "jpeg",
+          "png",
+        ]);
 
-      console.log("voucherUploadedvoucherUploadedvoucherUploaded")      
-      console.log(voucherUploaded)
+        objectDir.push(voucherUploaded.filename);
+        pathTemp=voucherUploaded.filename;
 
-      objectDir.push(voucherUploaded.filename);
-      pathTemp=voucherUploaded.filename;
-      if (!attendeeuniversity) {
-        reservationCreated.dir_voucher = voucherUploaded.filename;
+        if (!attendeeuniversity) {
+          reservationCreated.dir_voucher = voucherUploaded.filename;
+          await reservationCreated.save({ transaction });
+
+          resolve({ ok: true, objectDir });
+          return;
+        }
+      }
+
+      const { fileuniversity } = files;
+      if (!fileuniversity == false) {
+        const fileuniversityUploaded = await uploadImage(
+          fileuniversity,
+          "file-university",
+          ["jpg", "jpeg", "png"]
+        );
+
+        reservationCreated.dir_fileuniversity = fileuniversityUploaded.filename;
         await reservationCreated.save({ transaction });
+        
+        objectDir.push(fileuniversityUploaded.filename);
 
         resolve({ ok: true, objectDir });
         return;
       }
-
-      const { fileuniversity } = files;
-      const fileuniversityUploaded = await uploadImage(
-        fileuniversity,
-        "file-university",
-        ["jpg", "jpeg", "png"]
-        );
-
-      console.log("fileuniversityUploadedfileuniversityUploadedfileuniversityUploaded")      
-      console.log(fileuniversityUploaded)  
-
-      reservationCreated.dir_voucher = voucherUploaded.filename;
-      reservationCreated.dir_fileuniversity = fileuniversityUploaded.filename;
-      
-      await reservationCreated.save({ transaction });
-
-      objectDir.push(fileuniversityUploaded.filename);
-
-      resolve({ ok: true, objectDir });
-      return;
     } catch (error) {
       if (error.name === "SequelizeUniqueConstraintError") {
         reject({

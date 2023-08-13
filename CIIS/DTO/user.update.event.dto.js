@@ -4,7 +4,6 @@ const addErrors = require("ajv-errors");
 const addFormats = require("ajv-formats");
 const { handleErrorResponse } = require("../middlewares/handleError");
 
-// Definir esquema
 const UserUpdateEventDto = Type.Object({
     name: Type.Optional(Type.String({
         pattern: "^[a-zA-ZáéíóúÁÉÍÓÚñÑ '-]+$",
@@ -52,20 +51,16 @@ const validate = ajv.compile(UserUpdateEventDto);
 
 const userUpdateDTO = (req, res, next) => {
     const isDTOValid = validate(req.body);
-
-    console.log("req.bodyreq.bodyreq.body");
-    console.log(req.body);
-    console.log(Object.keys(req.body).length);
-    console.log("req.filesreq.filesreq.files");
-    console.log(req.files);
-    console.log(Object.keys(req.files).length);
     
+    const { files } = req;
     if (!isDTOValid) {
         const errors = validate.errors.map((error) => error.message);
         handleErrorResponse(res, errors, 400);
         return;
+    } else if ((Object.keys(req.body).length == 0) && (files == undefined)) {
+        handleErrorResponse(res, "Se debe enviar al menos un dato", 400);
+        return;
     }
-
     next();
 };
 
