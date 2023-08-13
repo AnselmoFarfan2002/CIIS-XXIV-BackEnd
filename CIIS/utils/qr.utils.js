@@ -10,8 +10,8 @@ const sendQRToEmail = async (users) => {
           users.forEach(async (user) => {
             try {
       
-              const canvas = createCanvas(800, 800);
-              await toCanvas(canvas, user.code, { errorCorrectionLevel: 'H',width: 600 });
+              const canvas = createCanvas(600, 600);
+              await toCanvas(canvas, user.code, { errorCorrectionLevel: 'H',width: 500 });
               const qrImageData = canvas.toBuffer();
       
                const mailOptions = {

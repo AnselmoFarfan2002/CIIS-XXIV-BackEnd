@@ -6,7 +6,7 @@ const {validateExistUser}=require("../../middlewares/validateExistenceOfRecord")
 const { checkAuth, checkRole } = require("../../middlewares/auth");
 
 routerEvent.post('/:idEvent/attendance',checkAuth,
-checkRole(["Administrador"]),conferenceAttendanceDTO,validateExistUser,registerAttendance);
+checkRole(["Administrador","Organizador"]),conferenceAttendanceDTO,validateExistUser,registerAttendance);
 routerEvent.get('/gallery',getEventImages);
 routerEvent.get('/:idEvent',getOneEvent);
 routerEvent

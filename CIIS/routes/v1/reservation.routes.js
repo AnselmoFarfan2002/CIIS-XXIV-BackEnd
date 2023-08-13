@@ -10,6 +10,7 @@ const handleRecaptcha = require("../../middlewares/handleRecaptcha");
 const {
   validateKeyTypeAttende,
 } = require("../../middlewares/validateExistenceOfRecord");
+const { handleErrorResponse } = require("../../middlewares/handleError");
 
 routerRegister.use(
   fileUpload({
@@ -24,21 +25,24 @@ routerRegister.use(
 // routerRegister.post(
 //   "/",
 //   handleRecaptcha,
-//   uploadFile("imgvoucher"),
+//   uploadFile("imgvoucher", ["jpg", "jpeg", "png"]),
 //   userRegisterDTO,
 //   validateKeyTypeAttende,
 //   createPreRegisterUser
 // );
 
+routerRegister.post("/",(req,res)=>{
+  handleErrorResponse(res,'Ya no se aceptan inscripciones virtuales',400);
+});
 /**
  * En desarrollo (desactivamos el handleRecaptcha)
  */
-routerRegister.post(
-  "/",
-  uploadFile("imgvoucher", ["jpg", "jpeg", "png"]),
-  userRegisterDTO,
-  validateKeyTypeAttende,
-  createPreRegisterUser
-);
+// routerRegister.post(
+//   "/",
+//   uploadFile("imgvoucher", ["jpg", "jpeg", "png"]),
+//   userRegisterDTO,
+//   validateKeyTypeAttende,
+//   createPreRegisterUser
+// );
 
 module.exports = routerRegister;

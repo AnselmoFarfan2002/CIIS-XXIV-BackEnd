@@ -6,6 +6,7 @@ const {
   getImagesOfTheReserve,
   updateEnrollmentStatus,
   updateRegistrationObserved,
+  sendQRToUser
 } = require("../../controllers/registration.controller");
 const { checkAuth, checkRole } = require("../../middlewares/auth");
 const uploadFile = require("../../middlewares/upload.file");
@@ -14,7 +15,7 @@ const reservationViewImagesDTO = require("../../DTO/reservation.view.image.dto")
 const { reservationUpdateStatusDTO } = require("../../DTO/reservation.update.dto");
 const userUpdateDTO = require("../../DTO/user.update.event.dto");
 
-registrationRouter.get("/send-qr",sendQRToUser);
+registrationRouter.post("/send-qr",sendQRToUser);
 registrationRouter.patch(
   "/:idReserve/status",
   checkAuth,

@@ -4,7 +4,6 @@ const {
 } = require("../services/priceTypeAttendee.service");
 const {validateExtensionsToFile} = require("../utils/upload.img");
 const { handleErrorResponse,handleHttpError } = require("./handleError");
-const {validateExtensionsToFile}=require("../utils/upload.img");
 const {getUserByDniOrCode}=require("../services/user.service");
 
 // Valida que el evento exista y que el tipo de asistente este relacionado con este

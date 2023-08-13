@@ -15,7 +15,7 @@ const {
   verifyRegisterStatusAndDateExp,
   getTimeOfDayToConferences
 } = require("../services/conference.attendance.service.js");
-const { getDateTime, getDateTimeLocalPeru } = require("../utils/getdate.utils");
+const { getDateTime, getDateTimeLocalPeru,getDateUTC } = require("../utils/getdate.utils");
 const getEvents = async (req, res) => {
   try {
     const events = await EventService.getEvents(req.query);
@@ -68,7 +68,7 @@ const registerAttendance = async (req, res) => {
     const { idUser } = req;
   
     const reservationFound = await searchRegisterByEventAndUser(idEvent, idUser);
-    const currentDate = getDateTimeLocalPeru();
+    const currentDate = getDateUTC();
 
     await verifyRegisterStatusAndDateExp(reservationFound,currentDate);
 

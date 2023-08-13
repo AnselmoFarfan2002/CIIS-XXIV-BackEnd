@@ -287,10 +287,14 @@ module.exports = {
           <div class="content">
             <p>Estimado/a,</p>
             
-            <p>Agradecemos su inscripción al POSTMASTER 2023, le hacemos llegar su código QR el cual le
-            servirá para tomar su asistencia al evento.
+            <p>Agradecemos su inscripción al POSTMASTER XX y entusiasmo por ser parte de este evento académico.</p>
+            <p>Adjunto a este correo electrónico encontrará su código QR, que será su pase de asistencia durante el evento.</p> 
+            <p>Deseamos recordarle que la toma de asistencia se llevará a cabo tanto en la mañana como en la tarde, garantizando así su participación completa.
+            </p>
+            <p>Esperamos que disfruten del evento y aprovechen al máximo las ponencias de los destacados profesionales de nuestra escuela, que compartirán su experiencia y conocimientos con usted.
             </p>
 
+            <p>Si tiene alguna pregunta o necesita más información, no dude en ponerse en contacto con nosotros.</p>
             <p>Atentamente,</p>
             
             <p>El equipo de tecnología web del CIIS XXIV</p>

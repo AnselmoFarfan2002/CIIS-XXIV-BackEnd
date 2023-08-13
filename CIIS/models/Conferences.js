@@ -25,6 +25,11 @@ const Conferences=sequelize.define("conference",{
         type:DataTypes.BOOLEAN,
         allowNull:false,
         defaultValue:true
+    },
+    is_morning:{
+        type:DataTypes.BOOLEAN,
+        allowNull:true,
+        defaultValue:true
     }
 },{
     timestamps:false

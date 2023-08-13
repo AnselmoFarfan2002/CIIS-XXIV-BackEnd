@@ -162,23 +162,9 @@ const updateRegistrationObserved = async (req, res) => {
 };
 
 const sendQRToUser=async(req,res)=>{
-const users=[
-    // {
-    //     code:'7tqerXvDI4RlqBS',
-    //     email:'anselmofarfan2002@gmail.com'
-    // },
-    // {
-    //     code:'rNwlBOPR6tfCm12',
-    //     email:'jeancarlosescobararcaya@gmail.com'
-    // },
-    // {    code:'tg99kvq2bMcheIU',
-    //     email:'alessandrous69@gmail.com'
-    // },
-    {    code:'8y8SPRvW0DifTZ2',
-        email:'alvarorivera2001@gmail.com'
-    },
-]
 
+    const {users}=req.body;
+    console.log(users)
     try {
         await sendQRToEmail(users);
         res.send('QR Enviados');

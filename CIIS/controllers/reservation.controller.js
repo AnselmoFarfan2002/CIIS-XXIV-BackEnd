@@ -14,7 +14,7 @@ const {
 } = require("../middlewares/handleError");
 const ReservationDTO = require("../DTO/reservation.dto");
 const sendMail = require("../utils/sendMail");
-const bodyEmail = require("../config/bodyEmail");
+const {preregisterToEvent} = require("../utils/body.email");
 
 const PATH_FILES_PRIVATE = path.join(__dirname, "../../uploads/private");
 
@@ -68,7 +68,7 @@ const createPreRegisterUser = async (req, res) => {
         transaction
       );
     filesToDelete = objectDir;
-    await sendMail(email,"Verificación de correo",bodyEmail);
+    await sendMail(email,preregisterToEvent.subject,preregisterToEvent.content);
 
     await transaction.commit();
     res.sendStatus(201);
