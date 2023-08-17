@@ -31,18 +31,18 @@ routerRegister.use(
 //   createPreRegisterUser
 // );
 
-routerRegister.post("/",(req,res)=>{
-  handleErrorResponse(res,'Ya no se aceptan inscripciones virtuales',400);
-});
+// routerRegister.post("/",(req,res)=>{
+//   handleErrorResponse(res,'Ya no se aceptan inscripciones virtuales',400);
+// });
 /**
  * En desarrollo (desactivamos el handleRecaptcha)
  */
-// routerRegister.post(
-//   "/",
-//   uploadFile("imgvoucher", ["jpg", "jpeg", "png"]),
-//   userRegisterDTO,
-//   validateKeyTypeAttende,
-//   createPreRegisterUser
-// );
+routerRegister.post(
+  "/",
+  uploadFile("imgvoucher", ["jpg", "jpeg", "png"]),
+  userRegisterDTO,
+  validateKeyTypeAttende,
+  createPreRegisterUser
+);
 
 module.exports = routerRegister;

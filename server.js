@@ -34,6 +34,7 @@ class Server {
   routes() {
     this.app.use("/api", CIIS_API_ROUTES);
     this.app.use(express.static(path.join(__dirname, "build")));
+    this.app.use(express.static(path.join(__dirname, "uploads","public")));
     this.app.get("*", (req, res) => {
       res.sendFile(path.join(__dirname, "build", "index.html"));
     });
