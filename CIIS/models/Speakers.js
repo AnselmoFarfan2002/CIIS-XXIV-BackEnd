@@ -35,14 +35,18 @@ const Speakers=sequelize.define("speaker",{
         type:DataTypes.STRING,
         allowNull:true,
     },
-    img_dir_speaker:{
+    dir_img_speaker:{
         type:DataTypes.STRING,
         allowNull:true,
     },
     work_place_speaker:{
         type:DataTypes.STRING,
         allowNull:true
-    }
+    },
+    linkedin_speaker:{
+        type:DataTypes.STRING,
+        allowNull:true
+    },
 },{
     timestamps:false
 });

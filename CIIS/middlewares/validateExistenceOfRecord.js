@@ -1,11 +1,11 @@
-const { searchEventActive } = require("../services/event.service");
+const { searchEventActive, getOneEvent } = require("../services/event.service");
 const {
   searchTypeAttendeByReservation,
 } = require("../services/priceTypeAttendee.service");
-const {validateExtensionsToFile} = require("../utils/upload.img");
-const { handleErrorResponse,handleHttpError } = require("./handleError");
-const {getUserByDniOrCode}=require("../services/user.service");
-
+const { validateExtensionsToFile } = require("../utils/upload.img");
+const { handleErrorResponse, handleHttpError } = require("./handleError");
+const { getUserByDniOrCode } = require("../services/user.service");
+const uploadFile = require("./upload.file");
 // Valida que el evento exista y que el tipo de asistente este relacionado con este
 const validateKeyTypeAttende = async (req, res, next) => {
   if (!req.query || Object.keys(req.query).length === 0 || !req.query.event) {
@@ -34,7 +34,7 @@ const validateKeyTypeAttende = async (req, res, next) => {
     return;
   }
 
-  req.priceTypeAttendee=existTypeAttendee.id_price_type_attendee;
+  req.priceTypeAttendee = existTypeAttendee.id_price_type_attendee;
 
   const { isuniversity } = existTypeAttendee.type_attendee;
 
@@ -59,7 +59,12 @@ const validateKeyTypeAttende = async (req, res, next) => {
       400
     );
 
-  if (!validateExtensionsToFile(["jpg", "jpeg", "png"], req.files["fileuniversity"])) {
+  if (
+    !validateExtensionsToFile(
+      ["jpg", "jpeg", "png"],
+      req.files["fileuniversity"]
+    )
+  ) {
     return handleErrorResponse(
       res,
       "La extensión del archivo no es válida",
@@ -70,13 +75,14 @@ const validateKeyTypeAttende = async (req, res, next) => {
   next();
 };
 
-
 const validateFileVoucher = async (req, res, next) => {
-	if(!req.files["filevoucher"]) {
-		next();
-	}
+  if (!req.files["filevoucher"]) {
+    next();
+  }
 
-	if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["filevoucher"])) {
+  if (
+    !validateExtensionsToFile(["jpg", "jpeg", "png"], req.files["filevoucher"])
+  ) {
     return handleErrorResponse(
       res,
       "La extensión del archivo no es válido",
@@ -84,60 +90,141 @@ const validateFileVoucher = async (req, res, next) => {
     );
   }
   next();
-}
+};
 
 const validateFileUniversity = async (req, res, next) => {
   const { idReserve } = req.params;
-  
+
   const existTypeAttendee = await searchTypeAttendeByReservation(idReserve);
-  
+
   if (!existTypeAttendee) {
     handleErrorResponse(res, "No se ha encontrado el tipo de asistente", 404);
     return;
   }
-  
-  console.log("existTypeAttendeeexistTypeAttendeeexistTypeAttendee")
-  console.log(existTypeAttendee)
+
+  console.log("existTypeAttendeeexistTypeAttendeeexistTypeAttendee");
+  console.log(existTypeAttendee);
 
   const { isuniversity } = existTypeAttendee;
-  console.log("isuniversityisuniversityisuniversity")
-  console.log(isuniversity)
+  console.log("isuniversityisuniversityisuniversity");
+  console.log(isuniversity);
 
-  if(isuniversity) {
-    if(!req.files["fileuniversity"]) {
+  if (isuniversity) {
+    if (!req.files["fileuniversity"]) {
       reject();
     }
   }
 
-	if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["fileuniversity"])) {
-    return handleErrorResponse(res, "La extensión del archivo no es válido", 400);
+  if (
+    !validateExtensionsToFile(
+      ["jpg", "jpeg", "png"],
+      req.files["fileuniversity"]
+    )
+  ) {
+    return handleErrorResponse(
+      res,
+      "La extensión del archivo no es válido",
+      400
+    );
   }
 
   req.attendeeuniversity = isuniversity;
   next();
-}
+};
 
-const validateExistUser=async(req,res,next)=>{
-  try{
-    const {user}=req.query;
+const validateExistUser = async (req, res, next) => {
+  try {
+    const { user } = req.query;
 
-    const userFound=await getUserByDniOrCode(user);
+    const userFound = await getUserByDniOrCode(user);
 
-    req.idUser=userFound.id_user;
+    req.idUser = userFound.id_user;
 
     next();
-  }catch(error){
+  } catch (error) {
     if (error.code) {
       return handleErrorResponse(res, error.message, error.code);
     }
     return handleHttpError(res, error);
   }
-}
+};
+
+const validateFileOptional =
+  (nameFile, allowedExtensions) => (req, res, next) => {
+    if (
+      !req.files ||
+      Object.keys(req.files).length === 0 ||
+      !req.files[nameFile]
+    ) {
+      next();
+      return;
+    }
+    uploadFile(nameFile, allowedExtensions)(req, res, next);
+  };
+
+const validateExistEvent = async (req, res, next) => {
+  try {
+    const { idEvent } = req.params;
+
+    let regex = /^[0-9]+$/;
+
+    if (!regex.test(idEvent)) {
+      handleErrorResponse(res, "El id del evento no es válido", 400);
+      return;
+    }
+
+    await getOneEvent(idEvent);
+
+    next();
+    return;
+  } catch (error) {
+    if (error.code) {
+      handleErrorResponse(res, error.message, error.code);
+      return;
+    }
+
+    handleHttpError(res, error);
+  }
+};
+
+const validateFormDataToUploadImages =
+  (nameInputs = ["fields"]) =>
+  (req, res, next) => {
+    const bodyObject = req.body;
+    const { image = [] } = req.files;
+
+    const dataObject = { ...bodyObject, image };
+
+    const keysObject = Object.keys(dataObject);
+
+    console.log(dataObject);
+    const isFieldMatch = keysObject.every((key) => nameInputs.includes(key));
+
+    if (!isFieldMatch) {
+      handleErrorResponse(res, "El formato no es válido", 400);
+      return;
+    }
+    const lengthInputs = Object.values(dataObject).map((arr) => arr.length);
+
+    const isEqual = lengthInputs.every((len) => len === lengthInputs[0]);
+
+    if (!isEqual) {
+      handleErrorResponse(res, "La cantidad de inputs no son iguales", 400);
+      return;
+    }
+
+    next();
+    // for (const [key, value] of Object.entries(dataObject)) {
+    //   console.log(`${key}: ${value}`);
+    // }
+  };
 
 module.exports = {
   validateFileVoucher,
   validateFileUniversity,
   validateKeyTypeAttende,
-  validateExistUser
+  validateExistUser,
+  validateFileOptional,
+  validateExistEvent,
+  validateFormDataToUploadImages,
 };
-

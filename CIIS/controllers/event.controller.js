@@ -46,14 +46,13 @@ const deleteEvent = (req, res) => {};
 const getEventImages = async (req, res) => {
   try {
     const eventsGallery = await EventService.getEventImagesByType(req.query);
-
     const eventsGalleryByType = eventsGallery.map((event) => {
       const galleryByEvent = event.Gallery_Events.map(
         (item) => new ItemsGalleryDTO(item.dir_photo, item.name)
       );
-      return new EventsGalleryTypeDTO(event.name, event.about, galleryByEvent);
-    });
 
+      return new EventsGalleryTypeDTO(event.name, event.about,event.get('anio'), galleryByEvent);
+    });
     res.json(eventsGalleryByType);
   } catch (error) {
     handleHttpError(res, error);
@@ -96,6 +95,7 @@ const registerAttendance = async (req, res) => {
     return handleHttpError(res, error);
   }
 };
+
 module.exports = {
   getEvents,
   getOneEvent,

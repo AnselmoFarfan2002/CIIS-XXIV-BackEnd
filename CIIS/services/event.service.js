@@ -1,7 +1,6 @@
-const { Op } = require("sequelize");
+const { Op,Sequelize } = require("sequelize");
 const Event = require("../models/Events");
 const Gallery=require("../models/GalleryEvents");
-const TypeEvent=require("../models/TypeEvent");
 
 const getEvents = async (query) => {
   if (!Object.keys(query).length) {
@@ -48,7 +47,7 @@ const getOneEvent = async (id) => {
       });
       return;
     }
-    return event.toJSON();
+    resolve(event.toJSON());
   })
 };
 
@@ -81,6 +80,8 @@ const getEventImagesByType=async({type=null})=>{
   
   if(!type){
     const eventsGallery=await Event.findAll({
+      attributes:['name','about',[Sequelize.fn('YEAR', Sequelize.col('start_date')), 'anio']],
+      order:[['start_date','ASC']],
       include:[{
         model:Gallery,
         attributes:['name','dir_photo']
@@ -89,9 +90,11 @@ const getEventImagesByType=async({type=null})=>{
     return eventsGallery;
   }
   const galleryTypeEvent=await Event.findAll({
+    attributes:['name','about',[Sequelize.fn('YEAR', Sequelize.col('start_date')), 'anio']],
     where:{
       type_event_id:type
     },
+    order:[['start_date','ASC']],
     include:[{
       model:Gallery,
       attributes:['name','dir_photo']
