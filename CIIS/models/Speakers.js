@@ -43,6 +43,10 @@ const Speakers=sequelize.define("speaker",{
         type:DataTypes.STRING,
         allowNull:true
     },
+    nationality_speaker:{
+        type:DataTypes.STRING,
+        allowNull:true,
+    },
     linkedin_speaker:{
         type:DataTypes.STRING,
         allowNull:true
