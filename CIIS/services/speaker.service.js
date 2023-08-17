@@ -30,14 +30,14 @@ const getSpeakersByEvent = async (id) => {
             return {
                 id: speaker.id_speaker,
                 name: speaker.name_speaker,
-                ocupation: speaker.ocupation_speaker,
+                role: speaker.ocupation_speaker,
                 university: speaker.university_speaker,
-                email: speaker.email_speaker,
+                socialNetwork: speaker.email_speaker,
                 phone: speaker.phone_speaker,
-                description: speaker.about_profile_speaker,
-                img: speaker.img_dir_speaker,
-                workplace: speaker.work_place_speaker,
-                nationality: speaker.nationality_speaker,
+                desc: speaker.about_profile_speaker,
+                avatar: speaker.img_dir_speaker,
+                placeWork: speaker.work_place_speaker,
+                nacionality: speaker.nationality_speaker,
                 linkedin: speaker.linkedin_speaker,
             };
         });
