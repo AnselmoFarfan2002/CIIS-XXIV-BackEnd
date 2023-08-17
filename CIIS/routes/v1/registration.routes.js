@@ -46,7 +46,13 @@ registrationRouter.put(
   "/:idReserve",
   checkAuth,
   checkRole(["Administrador"]),
-  uploadFile("filevoucher", ["jpg", "jpeg", "png"]),
+  (req, res, next) => {
+    if (req.files && req.files["filevoucher"]) {
+      uploadFile("filevoucher", ["jpg", "jpeg", "png"])(req, res, next);
+    } else {
+      next();
+    }
+  },
   userUpdateDTO,
   validateFileVoucher,
   validateFileUniversity,
