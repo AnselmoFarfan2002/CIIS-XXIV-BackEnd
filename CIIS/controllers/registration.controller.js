@@ -183,6 +183,5 @@ module.exports = {
   getImagesOfTheReserve,
   updateEnrollmentStatus,
   updateRegistrationObserved,
-  getImagesOfTheReserve,
   sendQRToUser
 };

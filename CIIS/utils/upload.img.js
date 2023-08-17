@@ -2,7 +2,17 @@ const path = require("path");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
-const uploadImage = (file, namefolder, extensions = ["jpg", "jpeg", "png"]) => {
+
+/**
+ * 
+ * @param {file} file 
+ * @param {string} nameMainFolder public or private 
+ * @param {string} namefolder 
+ * @param {string} extensions 
+ * @returns 
+ */
+
+const uploadImage = (file,nameMainFolder="public", namefolder, extensions = ["jpg", "jpeg", "png"]) => {
   return new Promise((resolve, reject) => {
     //Valid Extensions
     const fileExt = file.name.split(".").pop();
@@ -20,7 +30,7 @@ const uploadImage = (file, namefolder, extensions = ["jpg", "jpeg", "png"]) => {
 
     const uploadPath = path.join(
       __dirname,
-      `../../uploads/private/${namefolder}`,
+      `../../uploads/${nameMainFolder}/${namefolder}`,
       nameUniqueFile
     );
 

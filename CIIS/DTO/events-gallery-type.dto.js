@@ -1,7 +1,8 @@
 class EventsGalleryTypeDTO{
-    constructor(title,description,items){
+    constructor(title,description,_anio,items){
         this.title=title;
         this.description=description;
+        this.anio=_anio;
         this.items=items;
     }
 }
