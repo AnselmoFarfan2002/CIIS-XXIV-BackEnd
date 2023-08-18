@@ -5,7 +5,7 @@ const {
 const { validateExtensionsToFile } = require("../utils/upload.img");
 const { handleErrorResponse, handleHttpError } = require("./handleError");
 const { getUserByDniOrCode } = require("../services/user.service");
-const uploadFile = require("./upload.file");
+const {uploadFile} = require("./upload.file");
 // Valida que el evento exista y que el tipo de asistente este relacionado con este
 const validateKeyTypeAttende = async (req, res, next) => {
   if (!req.query || Object.keys(req.query).length === 0 || !req.query.event) {
@@ -179,24 +179,35 @@ const validateExistEvent = async (req, res, next) => {
 };
 
 const validateFormDataToUploadImages =
-  (nameInputs = ["fields"]) =>
-  (req, res, next) => {
-    const bodyObject = req.body;
-    const { image = [] } = req.files;
+(nameInputs = ["fields"]) =>
+(req, res, next) => {
+  const bodyObject = req.body;
+  let { image = [] } = req.files;
+  
+  //check that values of the body are array
+  for (const [key, value] of Object.entries(bodyObject)) {
+    if(!Array.isArray(value)){
+      bodyObject[key]=[value]; //convert to array
+    }
+  }
 
-    const dataObject = { ...bodyObject, image };
+  if(!Array.isArray(image)){
+    image=[image]; //convert to array
+  }
 
+    const dataObject = { ...bodyObject,image };
     const keysObject = Object.keys(dataObject);
 
-    console.log(dataObject);
+    //check that key of the body are valid    
     const isFieldMatch = keysObject.every((key) => nameInputs.includes(key));
 
     if (!isFieldMatch) {
       handleErrorResponse(res, "El formato no es válido", 400);
       return;
     }
-    const lengthInputs = Object.values(dataObject).map((arr) => arr.length);
 
+    //check the size of the object elements
+    const lengthInputs = Object.values(dataObject).map((arr) => arr.length);
     const isEqual = lengthInputs.every((len) => len === lengthInputs[0]);
 
     if (!isEqual) {
@@ -204,10 +215,10 @@ const validateFormDataToUploadImages =
       return;
     }
 
+    dataObject.lengthInputs=lengthInputs[0];
+
+    req.formDataObject=dataObject;
     next();
-    // for (const [key, value] of Object.entries(dataObject)) {
-    //   console.log(`${key}: ${value}`);
-    // }
   };
 
 module.exports = {

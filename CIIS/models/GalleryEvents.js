@@ -17,6 +17,11 @@ const GalleryEvents = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    priority_photo:{
+      type:DataTypes.BOOLEAN,
+      allowNull:false,
+      defaultValue:true
+    }
   },
   {
     tableName:'gallery_events',

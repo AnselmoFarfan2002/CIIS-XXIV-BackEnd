@@ -53,8 +53,8 @@ const validateExtensionsToFile = (extensions, file) => {
   return (allowedExtensions.includes(fileExt));
 };
 
-const deleteImage = async (filePath) => {
-  const PATH_FILE = path.join(__dirname, "../../uploads/private/", filePath);
+const deleteImage = async (namefolder="public",filePath) => {
+  const PATH_FILE = path.join(__dirname, `../../uploads/${namefolder}/`, filePath);
   return fs.unlinkSync(PATH_FILE);
 };
 module.exports = {

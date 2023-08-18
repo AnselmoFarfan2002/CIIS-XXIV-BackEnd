@@ -45,7 +45,7 @@ const getSpeakersByEvent = async (id) => {
     })
 }
 
-const createSpeaker = (speakerObject, fileImage, transaction) => {
+const createSpeaker = (speakerObject, fileImage={}, transaction) => {
   return new Promise(async (resolve, reject) => {
     try {
       const dataObject = {
@@ -63,7 +63,7 @@ const createSpeaker = (speakerObject, fileImage, transaction) => {
         transaction,
       });
 
-      if (fileImage || !Object.keys(fileImage).length === 0) {
+      if (!Object.keys(fileImage).length === 0) {
         fileImageSpeaker = await uploadImage(fileImage,"public", "speakers", [
           "jpg",
           "jpeg",
