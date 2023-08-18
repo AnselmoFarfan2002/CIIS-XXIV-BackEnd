@@ -56,7 +56,7 @@ const createReservationEvent = async (
         });
         return;
       } else if (error.file == "file-university") {
-        await deleteImage(pathTemp);
+        await deleteImage("private",pathTemp);
         reject(error);
         return;
       } else {
@@ -133,7 +133,7 @@ const updateReservationEvent = async (
         });
         return;
       } else if (error.file == "file-university") {
-        await deleteImage(pathTemp);
+        await deleteImage("private",pathTemp);
         reject(error);
         return;
       } else {

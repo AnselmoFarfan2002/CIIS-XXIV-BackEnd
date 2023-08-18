@@ -5,7 +5,7 @@ const userRegisterDTO = require("../../DTO/user.register.event.dto");
 const {
   createPreRegisterUser,
 } = require("../../controllers/reservation.controller");
-const uploadFile = require("../../middlewares/upload.file");
+const {uploadFile} = require("../../middlewares/upload.file");
 const handleRecaptcha = require("../../middlewares/handleRecaptcha");
 const {
   validateKeyTypeAttende,

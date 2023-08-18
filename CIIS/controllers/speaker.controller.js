@@ -19,7 +19,10 @@ const getSpeakersByEvent = async (req, res) => {
 const createSpeaker=async(req,res)=>{
     const transaction=await sequelize.transaction();
     try {
-        const {avatar={}}=req.files;
+        let avatar={};
+        if(req.files && req.files.avatar!=undefined){
+            avatar=req.files.avatar;
+        }
         const speakerObject=req.body;
         const speaker=await speakerServices.createSpeaker(speakerObject,avatar,transaction);
         await transaction.commit();

@@ -9,7 +9,7 @@ const {
   sendQRToUser
 } = require("../../controllers/registration.controller");
 const { checkAuth, checkRole } = require("../../middlewares/auth");
-const uploadFile = require("../../middlewares/upload.file");
+const {uploadFile} = require("../../middlewares/upload.file");
 const { validateFileVoucher, validateFileUniversity } = require("../../middlewares/validateExistenceOfRecord");
 const reservationViewImagesDTO = require("../../DTO/reservation.view.image.dto");
 const { reservationUpdateStatusDTO } = require("../../DTO/reservation.update.dto");

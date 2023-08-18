@@ -11,7 +11,7 @@ const checkAuth = async (req, res, next) => {
       return handleErrorResponse(
         res,
         "Debe Iniciar Sesión. ¡Ingrese de nuevo!",
-        404
+        401
       );
     }
     const { payload } = await verifyToken(jwt, secret_key.jwt_key);
