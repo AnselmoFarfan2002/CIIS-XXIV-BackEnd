@@ -44,11 +44,29 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.3.5",
     "nanoid": "^3.3.4",
+    "next": "^13.4.19",
     "nodemailer": "^6.9.3",
     "qrcode": "^1.5.3",
     "sequelize": "^6.32.1",
     "socket.io": "^4.6.2",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
+    "@mui/icons-material": "^5.14.3",
+    "@mui/material": "^5.14.4",
+    "atropos": "^2.0.2",
+    "framer-motion": "^10.15.2",
+    "prop-types": "^15.8.1",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-countup": "^6.4.2",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-intersection-observer": "^9.5.2",
+    "react-particles": "^2.12.2",
+    "tsparticles-slim": "^2.12.0",
+    "uuidv4": "^6.2.13",
+    "yet-another-react-lightbox": "^3.12.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

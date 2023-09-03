@@ -5,14 +5,18 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const CIIS_API_ROUTES = require("./CIIS/routes/index.routes");
 const { app: configServer } = require("./CIIS/config/development.js");
+
+const next = require("next");
+
 class Server {
   constructor() {
     this.app = express();
     this.server = require("http").createServer(this.app);
     this.io = require("socket.io")(this.server);
 
+    this.uiHandler = next({ dev: false });
+
     this.config();
-    this.routes();
   }
 
   config() {
@@ -31,12 +35,14 @@ class Server {
   }
 
   socket() {}
-  routes() {
+  async routes() {
     this.app.use("/api", CIIS_API_ROUTES);
-    this.app.use(express.static(path.join(__dirname, "build")));
-    this.app.use(express.static(path.join(__dirname, "uploads","public")));
+    this.app.use(express.static(path.join(__dirname, "uploads", "public")));
+    this.app.use(express.static(path.join(__dirname, "public")));
+    await this.uiHandler.prepare();
     this.app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "build", "index.html"));
+      let handler = this.uiHandler.getRequestHandler();
+      return handler(req, res);
     });
   }
 

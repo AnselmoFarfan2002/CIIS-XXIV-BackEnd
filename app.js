@@ -4,7 +4,8 @@ const Server=require('./server');
 
 async function main(){
     const server = new Server();
-    await sequelize.sync();
+    // await sequelize.sync();
+    await server.routes()
     server.listen();
 }
 
