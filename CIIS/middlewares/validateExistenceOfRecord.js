@@ -1,10 +1,11 @@
 const { searchEventActive, getOneEvent } = require("../services/event.service");
 const {
   searchTypeAttendeByReservation,
+  searchTypeAttendeByEvent
 } = require("../services/priceTypeAttendee.service");
 const { validateExtensionsToFile } = require("../utils/upload.img");
 const { handleErrorResponse, handleHttpError } = require("./handleError");
-const { getUserByDniOrCode } = require("../services/user.service");
+const { getUserByDniOrCode,getUserByEmail } = require("../services/user.service");
 const {uploadFile} = require("./upload.file");
 // Valida que el evento exista y que el tipo de asistente este relacionado con este
 const validateKeyTypeAttende = async (req, res, next) => {
@@ -221,6 +222,25 @@ const validateFormDataToUploadImages =
     next();
   };
 
+const validateExistAccountUser=async(req,res,next)=>{
+  try {
+    const {email}=req.body;
+
+    const userFound=await getUserByEmail(email);
+
+    if(!userFound || !userFound.password_user){
+      req.user=(userFound)?{exist:true,id:userFound.id_user}:{exist:false};
+      next();
+      return;
+    }
+
+    handleErrorResponse(res,"El usuario ya existe",400);
+
+  } catch (error) {
+    handleHttpError(res,error);
+  }
+}
+
 module.exports = {
   validateFileVoucher,
   validateFileUniversity,
@@ -229,4 +249,5 @@ module.exports = {
   validateFileOptional,
   validateExistEvent,
   validateFormDataToUploadImages,
+  validateExistAccountUser
 };

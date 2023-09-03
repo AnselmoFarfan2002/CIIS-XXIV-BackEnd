@@ -13,7 +13,7 @@ const {
   handleErrorResponse,
 } = require("../middlewares/handleError");
 const ReservationDTO = require("../DTO/reservation.dto");
-const sendMail = require("../utils/sendMail");
+const {sendMail} = require("../utils/send.mail.utils");
 const {preregisterToEvent} = require("../utils/body.email");
 
 const PATH_FILES_PRIVATE = path.join(__dirname, "../../uploads/private");

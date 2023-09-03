@@ -16,6 +16,12 @@ class UserDTO{
     }
 
     /**
+     * @param {any} _password
+     */
+    set password(_password){
+        this.password_user=_password;
+    }
+    /**
      * @param {string} role
      */
     set role(role){

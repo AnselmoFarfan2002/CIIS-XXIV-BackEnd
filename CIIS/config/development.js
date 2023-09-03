@@ -16,6 +16,7 @@ module.exports = {
       process.env.KEY_RECAPTCHA || "6LeWTiMnAAAAAK1CzdpM9uIxkn3AoM42OZLpySGR",
     client_id: process.env.CLIENT_ID || "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",
     client_secret_key: process.env.CLIENT_SECRET_KEY||"843324626525-s58kork07c87lkb9tcr1u1bqogrl509f.apps.googleusercontent.com",
-    refresh_token_email: process.env.REFRESH_TOKEN_EMAIL||"1//04IZrIIc8FvKcCgYIARAAGAQSNwF-L9Irj4z0XfTxqBvJRAD4EXcMdBVX992twKeJ9X4HoR-ZFjZ1Jd3SnezJO5IA8JSquculPF8",
+    refresh_token_email: process.env.REFRESH_TOKEN_EMAIL||"1//04yeIuYdzJrdcCgYIARAAGAQSNwF-L9IrLKTdbTlfwPBDL4W-4qEOWXMq9yfXakujJM09eX0oxui9j7fKcWIPNZ_W9chBqKkvCbg",
+    encrypt_secret_key:process.env.ENCRYPT_SECRET_KEY||"TkS5e=8'1m1bD[i"
   },
 };
