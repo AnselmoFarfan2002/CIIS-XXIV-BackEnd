@@ -4,7 +4,7 @@ const sendMail = async (email, subject, content) => {
     try {
       const transporter = await configoAuth2();
       const mailOptions = {
-        from: "XX POSTMASTER <noreply.test.ciis@gmail.com>",
+        from: "XXIV CIIS <noreply.test.ciis@gmail.com>",
         to: email,
         subject,
         html: content,
@@ -22,4 +22,24 @@ const sendMail = async (email, subject, content) => {
   });
 };
 
-module.exports = sendMail;
+const sendMailWithFile = async (mailOptions) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const transporter = await configoAuth2();
+      await transporter.sendMail(mailOptions);
+      resolve();
+    } catch (error) {
+      console.log(error);
+      reject({
+        code: 400,
+        message: "Error al enviar el correo de preinscripción!",
+        sendMailFailed: true,
+      });
+    }
+  });
+};
+
+module.exports = {
+  sendMail,
+  sendMailWithFile
+};

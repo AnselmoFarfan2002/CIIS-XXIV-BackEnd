@@ -1,7 +1,7 @@
 const { toCanvas} = require("qrcode");
 const { createCanvas } = require('canvas');
 const { sendQR } = require("./body.email");
-const sendMailImage = require("./send.mail.image");
+const {sendMailWithFile} = require("./send.mail.utils");
 
 
 const sendQRToEmail = async (users) => {
@@ -26,7 +26,7 @@ const sendQRToEmail = async (users) => {
                     }
                   ]
                 };
-                await sendMailImage(mailOptions);
+                await sendMailWithFile(mailOptions);
             } catch (error) {
               console.log("Error al enviar correo");
               console.log(error);

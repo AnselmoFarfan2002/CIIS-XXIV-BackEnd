@@ -1,6 +1,6 @@
 const Conferences = require("../models/Conferences");
 const Events = require("../models/Events");
-const Speaker = require("../models/Speakers");
+const Speakers = require("../models/Speakers");
 const { uploadImage } = require("../utils/upload.img");
 
 const getSpeakersByEvent = async (id) => {
@@ -58,12 +58,11 @@ const createSpeaker = (speakerObject, fileImage={}, transaction) => {
         linkedin_speaker: speakerObject.socialNetwork
       };
 
-      let fileImageSpeaker = "";
-      const speakerBuild = Speaker.build(dataObject, {
+      let fileImageSpeaker = {};
+      const speakerBuild = Speakers.build(dataObject, {
         transaction,
       });
-
-      if (!Object.keys(fileImage).length === 0) {
+      if (Object.keys(fileImage).length!==0) {
         fileImageSpeaker = await uploadImage(fileImage,"public", "speakers", [
           "jpg",
           "jpeg",
@@ -71,7 +70,6 @@ const createSpeaker = (speakerObject, fileImage={}, transaction) => {
         ]);
         speakerBuild.dir_img_speaker = fileImageSpeaker.filename;
       }
-
       const speakerCreated = await speakerBuild.save({transaction});
 
       resolve(speakerCreated);
@@ -81,10 +79,10 @@ const createSpeaker = (speakerObject, fileImage={}, transaction) => {
   });
 };
 
-const createConferenceToSpeaker = (conferenceObject, transaction) => {
+const createConferenceToSpeaker = async(conferenceObject, transaction) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const conferenceCreated = await Conference.create(conferenceObject, {
+      const conferenceCreated = await Conferences.create(conferenceObject, {
         transaction,
       });
       resolve(conferenceCreated);

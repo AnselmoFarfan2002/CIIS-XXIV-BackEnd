@@ -1,11 +1,10 @@
 const sequelize = require("../config/database");
 const {handleErrorResponse,handleHttpError}=require("../middlewares/handleError");
 const speakerServices=require("../services/speaker.service");
-
 const getSpeakersByEvent = async (req, res) => {
     try {
         const { idEvent } = req.params;
-        const speakers = await speakerService.getSpeakersByEvent(idEvent);
+        const speakers = await speakerServices.getSpeakersByEvent(idEvent);
         res.json(speakers);
     } catch (error) {
         if (typeof error.code === "number") {
