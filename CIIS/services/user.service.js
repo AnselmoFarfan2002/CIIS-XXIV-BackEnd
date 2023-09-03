@@ -180,6 +180,26 @@ const getInfoRoleUserByDni=async(dni='')=>{
 
 }
 
+const getUserByEmail=(email)=> new Promise(async(resolve, reject) => {
+  try {
+    const user=await User.findOne({
+      where:{
+        email_user:email
+      }
+    });
+  
+    if(!user){
+      resolve(null);
+      return;
+    }
+  
+    resolve(user.toJSON());
+    return;
+  } catch (error) {
+    reject(error);
+  }
+})
+
 module.exports = {
   searchUserByReservation,
   createRegisterUser,
@@ -189,5 +209,6 @@ module.exports = {
   getUserInfoByDNI,
   updateUser,
   getUserByDniOrCode,
-  getInfoRoleUserByDni
+  getInfoRoleUserByDni,
+  getUserByEmail,
 };

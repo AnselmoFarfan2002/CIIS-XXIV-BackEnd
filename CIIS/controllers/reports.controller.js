@@ -1,5 +1,5 @@
 const ExcelJS = require("exceljs");
-const { getRegistrationsToUpload } = require("../services/report.service");
+const { getRegistrationsToUpload,getReportAttendanceByEvent } = require("../services/report.service");
 const {handleErrorResponse,handleHttpError}=require("../middlewares/handleError");
 const getReportsRegistrations = async (req, res) => {
   try {
@@ -51,10 +51,46 @@ const getReportsRegistrations = async (req, res) => {
       handleErrorResponse(res, error.message, error.code);
       return;
     }
-    handleErrorResponse(res,"Error al general general el archivo Excel",error);
+    handleHttpError(res,error);
   }
 };
 
+const getReportsAttendanceEvent=async(req,res)=>{
+  try {
+    const { idEvent } = req.params;
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Datos");
+
+    const registerFound = await getReportAttendanceByEvent(
+      idEvent,
+    );
+    // // Definir encabezados de columna
+    const columns = [
+      { header: 'Nombre Completo', key: 'fullname', width: 40 },
+      { header: 'Asistencias', key: 'attendance', width: 15 },
+    ];
+    worksheet.columns = columns;
+    console.log(registerFound)
+    registerFound.forEach((item) => {
+      worksheet.addRow(item);
+    });
+
+    res.setHeader('Content-Disposition', 'attachment; filename=reports.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    // Generar el archivo Excel y enviarlo como descarga
+    await workbook.xlsx.write(res)
+    res.end();
+  } catch (error) {
+    if (typeof error.code === "number") {
+      handleErrorResponse(res, error.message, error.code);
+      return;
+    }
+    handleHttpError(res,error);
+  }
+}
 module.exports = {
   getReportsRegistrations,
+  getReportsAttendanceEvent
 };
