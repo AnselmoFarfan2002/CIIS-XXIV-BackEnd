@@ -7,9 +7,11 @@ const {getSponsorsByEvent}=require("../../controllers/sponsor.controller");
 const {getTopicsToEvent}=require("../../controllers/topics.controller");
 const {createGalleryEvent}=require("../../controllers/galleryEvent.controller");
 const conferenceAttendanceDTO=require("../../DTO/conference.attendance.dto");
-const {validateExistUser,validateExistEvent,validateFormDataToUploadImages}=require("../../middlewares/validateExistenceOfRecord");
+const {validateFileOptional,validateExistUser,validateExistEvent,validateFormDataToUploadImages}=require("../../middlewares/validateExistenceOfRecord");
 const { checkAuth, checkRole } = require("../../middlewares/auth");
 const {uploadMultipleOrSingleFile}=require("../../middlewares/upload.file");
+const {createSponsorsByEvent}=require("../../controllers/sponsor.controller");
+const sponsorCreateDTO=require("../../DTO/sponsor.create.dto");
 
 routerEvent.use(
   fileUpload({
@@ -24,6 +26,7 @@ routerEvent.get('/:idEvent/topics',validateExistEvent,getTopicsToEvent);
 routerEvent.post('/:idEvent/gallery',checkAuth,checkRole(["Administrador"]),validateExistEvent,uploadMultipleOrSingleFile("image",["jpg","jpeg","png"]),validateFormDataToUploadImages(["name","priority","image"]),createGalleryEvent);
 routerEvent.get('/gallery',getEventImages);
 routerEvent.get('/:idEvent/sponsors',getSponsorsByEvent);
+routerEvent.post('/:idEvent/sponsors',checkAuth,checkRole(["Administrador","Organizador"]),validateFileOptional("avatar",["jpg", "jpeg", "png"]),sponsorCreateDTO,createSponsorsByEvent);
 routerEvent.get('/:idEvent/speakers',getSpeakersByEvent);
 routerEvent.get('/:idEvent',getOneEvent);
 routerEvent
