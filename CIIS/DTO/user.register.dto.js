@@ -5,7 +5,7 @@ const addFormats = require("ajv-formats");
 const { handleErrorResponse } = require("../middlewares/handleError");
 
 // definir schema
-const UserRegisterDto = Type.Object(
+const UserRegisterDtoSchema = Type.Object(
   {
     name: Type.String({
       pattern: "^[a-zA-ZáéíóúÁÉÍÓÚñÑ '-]+$",
@@ -17,16 +17,16 @@ const UserRegisterDto = Type.Object(
       minLength: 1,
       errorMessage: "Debe ser un apellido válido",
     }),
+    phone: Type.String({
+      minLength: 1,
+      errorMessage: "Debe ser un teléfono válido",
+    }),
     email: Type.String({
       format: "email",
       errorMessage: {
         type: "Debe ser un string",
         format: "Debe ser un email válido",
       },
-    }),
-    phone: Type.String({
-      minLength: 1,
-      errorMessage: "Debe ser un teléfono válido",
     }),
     password: Type.String({
       pattern: "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,16}$",
@@ -123,7 +123,7 @@ const ajv = new Ajv({ allErrors: true, messages: true })
 addFormats(ajv, ["email"]);
 addErrors(ajv);
 const validateEmailSchema = ajv.compile(UserEmailDto);
-const validateUserSchema = ajv.compile(UserRegisterDto);
+const validateUserSchema = ajv.compile(UserRegisterDtoSchema);
 const validateEmailCodeSchema = ajv.compile(UserCheckEmailCodeDto);
 const validatePasswordSchema = ajv.compile(UserPasswordDto);
 
@@ -182,6 +182,7 @@ const userCreateAccountDTO = (req, res, next) => {
     userRegisterDTO(req, res, next);
   }
 };
+
 module.exports = {
   userRegisterDTO,
   userEmailDTO,

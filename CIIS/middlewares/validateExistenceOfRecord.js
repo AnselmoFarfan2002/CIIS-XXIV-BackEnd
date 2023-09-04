@@ -77,13 +77,13 @@ const validateKeyTypeAttende = async (req, res, next) => {
 };
 
 const validateFileVoucher = async (req, res, next) => {
-	if(!req.files) {
+	if (!req.files) {
 		next();
   }
-  else if(!req.files["filevoucher"]) {
+  else if (!req.files["filevoucher"]) {
 		next();
 	} else {
-    if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["filevoucher"])) {
+    if (!validateExtensionsToFile(["jpg","jpeg","png"], req.files["filevoucher"])) {
       return handleErrorResponse(
         res,
         "La extensión del archivo no es válido",
@@ -95,32 +95,38 @@ const validateFileVoucher = async (req, res, next) => {
 }
 
 const validateFileUniversity = async (req, res, next) => {
-  if(!req.files) {
-		next();
-  }
-  else if(!req.files["fileuniversity"]) {
-		next();
-  } else {
-    const { idReserve } = req.params;
-    
-    const existTypeAttendee = await searchTypeAttendeByReservation(idReserve);
-    if (!existTypeAttendee) {
-      handleErrorResponse(res, "No se ha encontrado el tipo de asistente", 404);
+  try {
+    if (!req.files) {
+      next();
+    }
+    else if (!req.files["fileuniversity"]) {
+      next();
+    } else {
+      const { isuniversity } = await searchTypeAttendeByReservation(req.params.idReserve);
+      // if (!existTypeAttendee) {
+      //   handleErrorResponse(res, "No se ha encontrado el tipo de asistente", 404);
+      //   return;
+      // }
+      
+      // const { isuniversity } = existTypeAttendee;
+      if (!isuniversity) {
+        if (req.files["fileuniversity"]) {
+          return handleErrorResponse(res, "No debe enviarse una matrícula si es público general", 400);
+        }
+      } else {
+        if (!validateExtensionsToFile(["jpg","jpeg","png"], req.files["fileuniversity"])) {
+          return handleErrorResponse(res, "La extensión del archivo no es válido", 400);
+        }
+      }
+      req.attendeeuniversity = isuniversity;
+      next();
+    }
+  } catch (error) {
+    if (typeof error.code === "number") {
+      handleErrorResponse(res, error.message, error.code);
       return;
     }
-    
-    const { isuniversity } = existTypeAttendee;
-    if(!isuniversity) {
-      if(req.files["fileuniversity"]) {
-        return handleErrorResponse(res, "No debe enviarse una matrícula si es público general", 400);
-      }
-    } else {
-      if(!validateExtensionsToFile(["jpg","jpeg","png"], req.files["fileuniversity"])) {
-        return handleErrorResponse(res, "La extensión del archivo no es válido", 400);
-      }
-    }
-    req.attendeeuniversity = isuniversity;
-    next();
+    handleHttpError(res, error);
   }
 }
 
