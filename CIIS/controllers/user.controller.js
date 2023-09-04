@@ -110,15 +110,15 @@ const getPreviousInfoUser=async(req,res)=>{
 const createUserOrganizer = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {
-    const { name, lastname, phone, email, password, dni } = req.body;
+    const { body } = req;
 
     const userObject = {
-      name_user: name,
-      lastname_user: lastname,
-      phone_user: phone,
-      email_user: email,
-      password_user: await encrypt(password),
-      dni_user: dni,
+      name_user: body.name,
+      lastname_user: body.lastname,
+      phone_user: body.phone,
+      email_user: body.email,
+      password_user: await encrypt(body.password),
+      dni_user: body.dni,
       code_user: nanoid(15),
       role_id: "2",
       university_career_user: "Ingeniería en informática y sistemas",
@@ -133,7 +133,7 @@ const createUserOrganizer = async (req, res) => {
       action_date: getDateTime(),
       user_id: req.iduser,
       record_id: userCreated.id_user,
-      new_data: null
+      new_data: JSON.stringify(userObject.email_user)
     };
 
     await createRecordAudit(recordAuditObject, transaction);
@@ -142,8 +142,11 @@ const createUserOrganizer = async (req, res) => {
     res.sendStatus(201);
   } catch (error) {
     await transaction.rollback();
-
-    return handleHttpError(res, error);
+    if (typeof error.code === "number") {
+      handleErrorResponse(res, error.message, error.code);
+      return;
+    }
+    handleHttpError(res, error);
   }
 };
 

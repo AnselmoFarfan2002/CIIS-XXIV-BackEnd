@@ -10,7 +10,7 @@ const {
 } = require("../../controllers/registration.controller");
 const { checkAuth, checkRole } = require("../../middlewares/auth");
 const {uploadFile} = require("../../middlewares/upload.file");
-const { validateFileVoucher, validateFileUniversity } = require("../../middlewares/validateExistenceOfRecord");
+const { validateFileOptional, validateFileUniversity } = require("../../middlewares/validateExistenceOfRecord");
 const reservationViewImagesDTO = require("../../DTO/reservation.view.image.dto");
 const { reservationUpdateStatusDTO } = require("../../DTO/reservation.update.dto");
 const userUpdateDTO = require("../../DTO/user.update.event.dto");
@@ -46,16 +46,9 @@ registrationRouter.put(
   "/:idReserve",
   checkAuth,
   checkRole(["Administrador"]),
-  (req, res, next) => {
-    if (req.files && req.files["filevoucher"]) {
-      uploadFile("filevoucher", ["jpg", "jpeg", "png"])(req, res, next);
-    } else {
-      next();
-    }
-  },
-  userUpdateDTO,
-  validateFileVoucher,
+  validateFileOptional("filevoucher",["jpg", "jpeg", "png"]),
   validateFileUniversity,
+  userUpdateDTO,
   updateRegistrationObserved
 );
 

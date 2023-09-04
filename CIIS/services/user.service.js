@@ -12,7 +12,7 @@ const searchUserByReservation = async (id_reservation) => {
   });
 
   if (!reservation || !reservation.user) {
-    throw new Error("No se encontró la reservación");
+    throw new Error("No se ha encontrado la reservación");
   }
 
   return (reservation.user).toJSON();
@@ -26,15 +26,17 @@ const createRegisterUser = async (userObject,transaction) => {
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         // Manejar el error de campo único
+        reject({code:409,message:"El dni o email ya fue utilizado, ¡ingrese uno nuevo!"});
+        return;
 
-        const userFound=await getInfoRoleUserByDni(userObject.dni_user);
+        // const userFound=await getInfoRoleUserByDni(userObject.dni_user);
 
-        if(userFound.role.id_role==3){
-          reject({code:409,message:"El dni o email ya fue utilizado, ¡ingrese uno nuevo!"});
-          return;
-        }
+        // if(userFound.role.id_role==3){
+        //   reject({code:409,message:"El dni o email ya fue utilizado, ¡ingrese uno nuevo!"});
+        //   return;
+        // }
 
-        resolve(userFound);
+        // resolve(userFound);
       } else {
         reject(error);
       }
@@ -131,6 +133,10 @@ const updateUser = async (id, userObject, transaction) => new Promise(async (res
     await userFound.update(userObject, { transaction });
     resolve(userFound.toJSON());
   } catch (error) {
+    if (error.name === "SequelizeUniqueConstraintError") {
+      reject({code: 409, message: "El email o dni ya fue utilizado"});
+      return
+    }
     reject(error);
   }
 });

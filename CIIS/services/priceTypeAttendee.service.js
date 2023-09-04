@@ -33,30 +33,32 @@ const searchTypeAttendeByEvent = async (type, event) => {
 };
 
 const searchTypeAttendeByReservation = async (id_reservation) => {  
-  const reservation = await Reservation.findOne({
-    where: {
-      id_reservation: id_reservation,
-    },
-    include: PriceTypeAttendee
-  });
-
-  if (!reservation || !reservation.price_type_attendee) {
-    throw new Error("No se encontró la reservación");
-  }
-
-  const id_type_attendee = reservation.price_type_attendee.type_attendee_id;
-
-  const typeAttendee = await TypeAttendee.findOne({
-    where: {
-      id_type_attendee: id_type_attendee,
+  return new Promise(async (resolve, reject) => {
+    try {
+      const reservation = await Reservation.findOne({
+        where: {
+          id_reservation: id_reservation,
+        },
+        include: PriceTypeAttendee
+      });
+    
+      if (!reservation || !reservation.price_type_attendee) {
+        reject({code: 404, message: "No se ha encontrado la reservación"});
+        return;
+      }
+        
+      const typeAttendee = await TypeAttendee.findByPk(reservation.price_type_attendee.type_attendee_id);
+      if (!typeAttendee) {
+        reject({code: 404, message: "No se ha encontrado el tipo de asistente"});
+        return;
+      }
+    
+      resolve(typeAttendee.toJSON());
+    } catch (error) {
+      reject(error);
+      return;
     }
   });
-  
-  if (!typeAttendee) {
-    throw new Error("No se encontró el tipo de asistente");
-  }
-
-  return typeAttendee.toJSON();
 };
 
 const updatePriceTypeAttendee = async (id, priceTypeAttendeeObject, transaction) => new Promise(async (resolve, reject) => {

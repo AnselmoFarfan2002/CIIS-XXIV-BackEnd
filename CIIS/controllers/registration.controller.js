@@ -1,27 +1,24 @@
 const path = require("path");
 const fs = require("fs");
 const sequelize = require("../config/database");
-const { 
-  getEmailByUserId,
-} = require("../services/user.service");
+const { getEmailByUserId } = require("../services/user.service");
 const registrationService = require("../services/registration.service");
 const reservationService = require("../services/reservation.service");
 const userService = require("../services/user.service");
 const { handleHttpError, handleErrorResponse } = require("../middlewares/handleError");
-const ReservationDTO = require("../DTO/reservation.dto");
-const {sendMail} = require("../utils/send.mail.utils");
+const { sendMail } = require("../utils/send.mail.utils");
 const { confirmedRegistration, deniedRegistration } = require("../utils/body.email");
 const { createRecordAudit } = require("../services/audit.log.service");
 const { getDateTime } = require("../utils/getdate.utils");
-const {sendQRToEmail}=require("../utils/qr.utils");
+const { sendQRToEmail } = require("../utils/qr.utils");
 const PATH_FILES_PRIVATE = path.join(__dirname, "../../uploads/private");
 
-const getRegistrations = async(req, res) => {
+const getRegistrations = async (req, res) => {
   try {
-      const registrations = await registrationService.getRegistrations(req.query);
-      res.json(registrations);
+    const registrations = await registrationService.getRegistrations(req.query);
+    res.json(registrations);
   } catch (error) {
-      handleHttpError(res, error);
+    handleHttpError(res, error);
   }
 }
 
@@ -107,68 +104,68 @@ const updateEnrollmentStatus = async (req, res) => {
 };
 
 const updateRegistrationObserved = async (req, res) => {
-  let filesToDelete = [];
   const transaction = await sequelize.transaction();
-
   try {
     const { idReserve } = req.params;
-    const { name, lastname, email, dni, phone } = req.body;
-    const { files, attendeeuniversity } = req;
+    const { body, files, attendeeuniversity } = req;
     
-    if (Object.keys(req.body).length > 0) {
+    if (Object.keys(body).length > 0) {
       const userObject = {};
-      if (name !== undefined) userObject.name_user = name;
-      if (lastname !== undefined) userObject.lastname_user = lastname;
-      if (email !== undefined) userObject.email_user = email;
-      if (dni !== undefined) userObject.dni_user = dni;
-      if (phone !== undefined) userObject.phone_user = phone;
-  
-      const userFound = await userService.searchUserByReservation(idReserve);
-      await userService.updateUser(userFound.id_user, userObject, transaction);
-  
+      if (body.name !== undefined) userObject.name_user = body.name;
+      if (body.lastname !== undefined) userObject.lastname_user = body.lastname;
+      if (body.email !== undefined) userObject.email_user = body.email;
+      if (body.dni !== undefined) userObject.dni_user = body.dni;
+      if (body.phone !== undefined) userObject.phone_user = body.phone;
+      
+      const { id_user } = await userService.searchUserByReservation(idReserve);      
+      await userService.updateUser(id_user, userObject, transaction);
+
       const recordAuditObject1 = {
         table_name: "user",
         action_type: "update",
         action_date: getDateTime(),
         user_id: req.iduser,
-        record_id: userFound.id_user,
-        new_data: JSON.stringify( userObject )
+        record_id: id_user,
+        new_data: JSON.stringify(userObject)
       };
   
       await createRecordAudit(recordAuditObject1, transaction);  
     }
 
-    if (files != null) {
+    if (files) {
       const reservationObject = {};
-      reservationObject.dir_voucher = (filevoucher = "temp");
 
-      const { objectDir } = await reservationService.updateReservationEvent(idReserve, reservationObject, files, attendeeuniversity, transaction);
+      const { dir_voucher, dir_fileuniversity } = await reservationService.updateReservationEvent(idReserve, reservationObject, files, attendeeuniversity, transaction);
 
-      const recordAuditObject = {
+      if (files.filevoucher !== undefined) reservationObject.dir_voucher = dir_voucher;
+      if (files.fileuniversity !== undefined) reservationObject.dir_fileuniversity = dir_fileuniversity;
+
+      const recordAuditObject2 = {
         table_name: "reservation",
         action_type: "update",
         action_date: getDateTime(),
         user_id: req.iduser,
         record_id: idReserve,
-        new_data: JSON.stringify( reservationObject )
+        new_data: JSON.stringify(reservationObject)
       };
 
-      await createRecordAudit(recordAuditObject, transaction);
-
-      filesToDelete = objectDir;
+      await createRecordAudit(recordAuditObject2, transaction);
     }
     
     await transaction.commit();
     res.sendStatus(204);
-  } catch (err) {
+  } catch (error) {
     await transaction.rollback();
-    return handleErrorResponse(res, err);
+    if (typeof error.code === "number") {
+      handleErrorResponse(res, error.message, error.code);
+      return;
+    }
+    handleHttpError(res, error);
   }
 };
 
-const sendQRToUser=async(req,res)=>{
-
-    const {users}=req.body;
+const sendQRToUser = async (req,res) => {
+    const { users } = req.body;
     console.log(users)
     try {
         await sendQRToEmail(users);
@@ -176,8 +173,8 @@ const sendQRToUser=async(req,res)=>{
     } catch (error) {
         handleHttpError(error);
     }
-
 }
+
 module.exports = {
   getRegistrations,
   getImagesOfTheReserve,
