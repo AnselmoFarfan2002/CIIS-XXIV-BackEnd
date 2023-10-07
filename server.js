@@ -6,16 +6,9 @@ const cookieParser = require("cookie-parser");
 const CIIS_API_ROUTES = require("./CIIS/routes/index.routes");
 const { app: configServer } = require("./CIIS/config/development.js");
 
-const next = require("next");
-
 class Server {
   constructor() {
     this.app = express();
-    this.server = require("http").createServer(this.app);
-    this.io = require("socket.io")(this.server);
-
-    this.uiHandler = next({ dev: false });
-
     this.config();
   }
 
@@ -27,27 +20,25 @@ class Server {
         credentials: true,
       })
     );
-    this.app.use(cookieParser());
     this.app.use(morgan("dev"));
     this.app.use(cookieParser());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: false }));
   }
 
-  socket() {}
-  async routes() {
+  initialize() {
     this.app.use("/api", CIIS_API_ROUTES);
     this.app.use(express.static(path.join(__dirname, "uploads", "public")));
     this.app.use(express.static(path.join(__dirname, "public")));
-    await this.uiHandler.prepare();
+    this.app.use(express.static(path.join(__dirname, "out")));
+
     this.app.get("*", (req, res) => {
-      let handler = this.uiHandler.getRequestHandler();
-      return handler(req, res);
+      res.sendFile(path.join(__dirname, "out", "index.html"));
     });
   }
 
   listen() {
-    this.server.listen(this.app.get("PORT"), (err) => {
+    const server = this.app.listen(this.app.get("PORT"), (err) => {
       if (err) console.log("Server had fallen. 😢");
       else console.log("Server is alive! 🤑", this.app.get("PORT"));
     });
@@ -55,30 +46,3 @@ class Server {
 }
 
 module.exports = Server;
-
-// const express = require("express")
-// const morgan = require("morgan")
-// const dotenv = require("dotenv")
-// const path = require('path')
-
-// const CIIS_API_ROUTES = require('./CIIS/routes/ciis.routes.js')
-
-// dotenv.config()
-// const app = express()
-
-// //middlewares 🔥
-// app.use(morgan('dev'))
-// app.use('/api', CIIS_API_ROUTES)
-// app.use(express.static(path.join(__dirname, '../cliente/build')))
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, '../cliente/build', 'index.html'));
-// })
-
-// //settings ⚙️
-// app.set('PORT', process.env.SERVER_PORT || 777)
-
-// /* Server set up 🏭 */
-// app.listen( app.get('PORT'), (err) => {
-//     if(err) console.log('Server had fallen. 😢')
-//     else console.log('Server is alive! 🤑', app.get('PORT'))
-// })

@@ -2,8 +2,8 @@ const { getInfoRoleUserByCode } = require("../services/user.service");
 const { verifyToken } = require("../utils/jwt.utils");
 const { secret_key } = require("../config/development");
 const { handleErrorResponse, handleHttpError } = require("./handleError");
-const {decryptToken}=require("../utils/encrypt.utils");
-const {validateExistAccountUser}=require("./validateExistenceOfRecord");
+const { decryptToken } = require("../utils/encrypt.utils");
+const { validateExistAccountUser } = require("./validateExistenceOfRecord");
 
 const checkAuth = async (req, res, next) => {
   try {
@@ -45,57 +45,79 @@ const checkRole = (roles) => async (req, res, next) => {
   }
 };
 
-const checkSession=async(req,res,next)=>{
-  const {jwt=''}=req.cookies;
+const checkSession = async (req, res, next) => {
+  const { jwt = "" } = req.cookies;
 
-  if(!jwt){
-    next()
+  if (!jwt) {
+    next();
     return;
   }
 
-  return handleErrorResponse(res,"Ya existe una sesión activa",409);
-}
+  return handleErrorResponse(res, "Ya existe una sesión activa", 409);
+};
 
-const checkTokenTemporary=async(req,res,next)=>{
+const checkTokenTemporary = async (req, res, next) => {
   try {
-    const {cui=""}=req.query;
-    if(!cui){
-      return handleErrorResponse(res,"No ha enviado ningun codigo de identificación",400);
+    const { cui = "" } = req.query;
+    if (!cui) {
+      return handleErrorResponse(
+        res,
+        "No ha enviado ningun codigo de identificación",
+        400
+      );
     }
-    const tokenDecrypt=await decryptToken(cui,secret_key.encrypt_secret_key);
-    const {payload}=await verifyToken(tokenDecrypt,secret_key.encrypt_secret_key);
-    req.email=payload.email;
+    const tokenDecrypt = await decryptToken(cui, secret_key.encrypt_secret_key);
+    const { payload } = await verifyToken(
+      tokenDecrypt,
+      secret_key.encrypt_secret_key
+    );
+    req.email = payload.email;
     next();
   } catch (error) {
-    if(error.code==="ERR_JWT_EXPIRED"){
-      return handleErrorResponse(res,"El token a expirado. ¡Vuelva a solicitar un código de verificación!",401);
+    if (error.code === "ERR_JWT_EXPIRED") {
+      return handleErrorResponse(
+        res,
+        "El token a expirado. ¡Vuelva a solicitar un código de verificación!",
+        401
+      );
     }
-    return handleHttpError(res,error);
+    return handleHttpError(res, error);
   }
-}
+};
 
-const checkTokenTemporaryToCreateAccount=async(req,res,next)=>{
+const checkTokenTemporaryToCreateAccount = async (req, res, next) => {
   try {
-    const {cui=""}=req.query;
-    if(!cui){
-      return handleErrorResponse(res,"No ha enviado ningun codigo de identificación",400);
+    const { cui = "" } = req.query;
+    if (!cui) {
+      return handleErrorResponse(
+        res,
+        "No ha enviado ningun codigo de identificación",
+        400
+      );
     }
-    const tokenDecrypt=await decryptToken(cui,secret_key.encrypt_secret_key);
-    const {payload}=await verifyToken(tokenDecrypt,secret_key.encrypt_secret_key);
-    req.body.email=payload.email;
+    const tokenDecrypt = await decryptToken(cui, secret_key.encrypt_secret_key);
+    const { payload } = await verifyToken(
+      tokenDecrypt,
+      secret_key.encrypt_secret_key
+    );
+    req.body.email = payload.email;
     next();
   } catch (error) {
-    if(error.code==="ERR_JWT_EXPIRED"){
-      return handleErrorResponse(res,"El token a expirado. ¡Vuelva a solicitar un código de verificación!",401);
+    if (error.code === "ERR_JWT_EXPIRED") {
+      return handleErrorResponse(
+        res,
+        "El token a expirado. ¡Vuelva a solicitar un código de verificación!",
+        401
+      );
     }
-    return handleHttpError(res,error);
+    return handleHttpError(res, error);
   }
-}
+};
 
 module.exports = {
   checkAuth,
   checkRole,
   checkSession,
   checkTokenTemporary,
-  checkTokenTemporaryToCreateAccount
+  checkTokenTemporaryToCreateAccount,
 };

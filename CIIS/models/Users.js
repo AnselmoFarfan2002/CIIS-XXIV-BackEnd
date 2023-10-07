@@ -28,15 +28,15 @@ const Users=sequelize.define("users",{
     },
     phone_user:{
         type:DataTypes.STRING,
-        allowNull:false, 
+        allowNull:true, 
     },
     university_career_user:{
         type:DataTypes.STRING,
-        allowNull:false,
+        allowNull:true,
     },
     study_center_user:{
         type:DataTypes.STRING,
-        allowNull:false,
+        allowNull:true,
     },
     password_user:{
         type:DataTypes.STRING,
@@ -44,7 +44,7 @@ const Users=sequelize.define("users",{
     },
     code_user:{
         type:DataTypes.STRING,
-        allowNull:false, 
+        allowNull:true, 
     },
 },{
     timestamps:false
