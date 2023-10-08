@@ -13,6 +13,7 @@ const sendMail = async (email, subject, content) => {
       await transporter.sendMail(mailOptions);
       resolve();
     } catch (error) {
+      console.log(error)
       reject({
         code: 400,
         message: "Error al enviar el correo de preinscripción!",

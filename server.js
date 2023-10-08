@@ -5,6 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const CIIS_API_ROUTES = require("./CIIS/routes/index.routes");
 const { app: configServer } = require("./CIIS/config/development.js");
+const fs = require("fs")
 
 class Server {
   constructor() {
@@ -29,11 +30,15 @@ class Server {
   initialize() {
     this.app.use("/api", CIIS_API_ROUTES);
     this.app.use(express.static(path.join(__dirname, "uploads", "public")));
-    this.app.use(express.static(path.join(__dirname, "public")));
+    // this.app.use(express.static(path.join(__dirname, "public")));
     this.app.use(express.static(path.join(__dirname, "out")));
 
     this.app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "out", "index.html"));
+      const destinity = path.join(__dirname, "out", `${req.path}.html`);
+      fs.access(destinity, fs.constants.F_OK, (err) => {
+        if (err) res.sendFile(path.join(__dirname, "out", `_404.html`));
+        else res.sendFile(destinity);
+      });
     });
   }
 

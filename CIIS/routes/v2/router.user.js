@@ -4,6 +4,8 @@ const http = require("../../utils/http.msg");
 const { error } = require("ajv/dist/vocabularies/applicator/dependencies");
 const crypto = require("crypto");
 const { encrypt } = require("../../utils/password.utils");
+const { sendMail } = require("../../utils/send.mail.utils");
+const email_registro = require("../../utils/emails/registro");
 const routerUser = Router();
 
 routerUser.route("/user").post((req, res) => {
@@ -34,7 +36,7 @@ routerUser.route("/user").post((req, res) => {
       })
     )
     .then((newUser) => {
-      console.log(newUser);
+      sendMail(email, "Registro exitoso", email_registro)
       res.status(201).send(newUser);
     })
     .catch((fail = null) => {
