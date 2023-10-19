@@ -4,8 +4,12 @@ const http = require("../../utils/http.msg");
 const { error } = require("ajv/dist/vocabularies/applicator/dependencies");
 const crypto = require("crypto");
 const { encrypt } = require("../../utils/password.utils");
-const { sendMail } = require("../../utils/send.mail.utils");
-const email_registro = require("../../utils/emails/registro");
+const { sendMail, sendMailAtDomain } = require("../../utils/send.mail.utils");
+const { email_registro } = require("../../utils/emails/registro");
+const authMid = require("../../middlewares/v2/auth");
+const TallerInscriptionSQL = require("../../models/Taller/TallerInscription");
+const Taller = require("../../classes/Taller");
+const Inscriptions = require("../../models/Inscriptions");
 const routerUser = Router();
 
 routerUser.route("/user").post((req, res) => {
@@ -35,8 +39,9 @@ routerUser.route("/user").post((req, res) => {
         password_user: await encrypt(password),
       })
     )
-    .then((newUser) => {
-      sendMail(email, "Registro exitoso", email_registro)
+    .then(async (newUser) => {
+      console.log(email);
+      await sendMailAtDomain(email, "Registro exitoso", email_registro);
       res.status(201).send(newUser);
     })
     .catch((fail = null) => {
@@ -44,6 +49,38 @@ routerUser.route("/user").post((req, res) => {
         ? res.status(fail.code).send(fail)
         : res.status(500).send(http["500"]);
     });
+});
+
+routerUser.route("/user/inscription").get(authMid, async (req, res) => {
+  try {
+    let inscripciones = {
+      talleres: [],
+      ciis: null,
+    };
+
+    let talleres = await TallerInscriptionSQL.findAll({
+      where: {
+        relatedUser: req.user.id,
+      },
+    });
+
+    inscripciones.talleres = await Promise.all(
+      talleres.map(async (tll) => {
+        let taller = new Taller();
+        await taller.load(tll.relatedTaller);
+        taller.state = tll.state;
+
+        return Promise.resolve(taller);
+      })
+    );
+
+    let ciis = await Inscriptions.findOne({ where: { id_user: req.user.id } });
+    inscripciones.ciis = ciis ? ciis.status : 3;
+    res.send(inscripciones);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(http["500"]);
+  }
 });
 
 module.exports = routerUser;

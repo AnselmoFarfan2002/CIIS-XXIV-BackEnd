@@ -6,6 +6,8 @@ const routerInscription = Router();
 const path = require("path");
 const Inscriptions = require("../../models/Inscriptions");
 const ScholarCodes = require("../../models/ScholarCodes");
+const { sendMailAtDomain } = require("../../utils/send.mail.utils");
+const { emailRegistroCIIS } = require("../../utils/emails/registro");
 
 const registers = {
   op1: (req, res) => {
@@ -27,7 +29,14 @@ const registers = {
             status: 0,
             delegacion: null,
           })
-            .then((data) => res.status(201).send(data.dataValues))
+            .then((data) => {
+              sendMailAtDomain(
+                req.user.email,
+                'Pre inscripción a "Congreso Internacional de Informática y Sistemas, 24° Edición" exitosa',
+                emailRegistroCIIS(req.user)
+              );
+              res.status(201).send(data.dataValues);
+            })
             .catch((err) => {
               console.log(err);
               res.status(500).send(http["500"]);
@@ -58,7 +67,14 @@ const registers = {
             status: 0,
             delegacion: null,
           })
-            .then((data) => res.status(201).send(data.dataValues))
+            .then((data) => {
+              sendMailAtDomain(
+                req.user.email,
+                'Pre inscripción a "Congreso Internacional de Informática y Sistemas, 24° Edición" exitosa',
+                emailRegistroCIIS(req.user)
+              );
+              res.status(201).send(data.dataValues);
+            })
             .catch((err) => {
               console.log(err);
               res.status(500).send(http["500"]);
@@ -99,7 +115,14 @@ const registers = {
                 status: 0,
                 delegacion: req.body.scholar_code,
               })
-                .then((data) => res.status(201).send(data.dataValues))
+                .then((data) => {
+                  sendMailAtDomain(
+                    req.user.email,
+                    'Pre inscripción a "Congreso Internacional de Informática y Sistemas, 24° Edición" exitosa',
+                    emailRegistroCIIS(req.user)
+                  );
+                  res.status(201).send(data.dataValues);
+                })
                 .catch((err) => {
                   console.log(err);
                   res.status(500).send(http["500"]);
@@ -135,7 +158,14 @@ const registers = {
             status: 0,
             delegacion: null,
           })
-            .then((data) => res.status(201).send(data.dataValues))
+            .then((data) => {
+              sendMailAtDomain(
+                req.user.email,
+                'Pre inscripción a "Congreso Internacional de Informática y Sistemas, 24° Edición" exitosa',
+                emailRegistroCIIS(req.user)
+              );
+              res.status(201).send(data.dataValues);
+            })
             .catch((err) => {
               console.log(err);
               res.status(500).send(http["500"]);

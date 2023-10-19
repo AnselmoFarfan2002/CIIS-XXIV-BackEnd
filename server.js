@@ -5,7 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const CIIS_API_ROUTES = require("./CIIS/routes/index.routes");
 const { app: configServer } = require("./CIIS/config/development.js");
-const fs = require("fs")
+const fs = require("fs");
 
 class Server {
   constructor() {
@@ -36,8 +36,11 @@ class Server {
     this.app.get("*", (req, res) => {
       const destinity = path.join(__dirname, "out", `${req.path}.html`);
       fs.access(destinity, fs.constants.F_OK, (err) => {
-        if (err) res.sendFile(path.join(__dirname, "out", `_404.html`));
-        else res.sendFile(destinity);
+        if (err) res.redirect("/");
+        else {
+          res.setHeader("Cache-Control", "public, max-age=604800");
+          res.sendFile(destinity);
+        }
       });
     });
   }

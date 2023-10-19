@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node run app.js",
     "server": "nodemon run app.js",
+    "dev": "nodemon run app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
