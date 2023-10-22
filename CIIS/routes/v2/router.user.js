@@ -10,6 +10,7 @@ const authMid = require("../../middlewares/v2/auth");
 const TallerInscriptionSQL = require("../../models/Taller/TallerInscription");
 const Taller = require("../../classes/Taller");
 const Inscriptions = require("../../models/Inscriptions");
+const CONTROLLER_SESSION = require("../../controllers/v2/session");
 const routerUser = Router();
 
 routerUser.route("/user").post((req, res) => {
@@ -40,9 +41,8 @@ routerUser.route("/user").post((req, res) => {
       })
     )
     .then(async (newUser) => {
-      console.log(email);
-      await sendMailAtDomain(email, "Registro exitoso", email_registro);
-      res.status(201).send(newUser);
+      sendMailAtDomain(email, "Registro exitoso", email_registro);
+      CONTROLLER_SESSION.POST(req, res);
     })
     .catch((fail = null) => {
       fail.code
