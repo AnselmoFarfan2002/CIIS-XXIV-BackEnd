@@ -6,7 +6,7 @@ const PriceTypeAttendee = require("../models/PriceTypeAttendee");
 
 const getRegistrations = async (query) => {
   if (!Object.keys(query).length) {
-    const {count,rows} = await Reservation.findAndCountAll({
+    const { count, rows } = await Reservation.findAndCountAll({
       include: [
         {
           model: Users,
@@ -43,8 +43,8 @@ const getRegistrations = async (query) => {
     });
 
     return {
-      registrations:registrationsMap,
-      totalRecords:count
+      registrations: registrationsMap,
+      totalRecords: count,
     };
   }
 
@@ -59,7 +59,7 @@ const getRegistrations = async (query) => {
 
   const whereUsers = {};
   const whereEvents = {};
-  const whereReservations={};
+  const whereReservations = {};
   if (search) {
     whereUsers[Op.or] = [
       { name_user: { [Op.like]: `%${search}%` } },
@@ -80,8 +80,8 @@ const getRegistrations = async (query) => {
     whereEvents[Op.and] = [{ type_event_id: { [Op.eq]: event } }];
   }
 
-  if(status){
-    whereReservations[Op.and]=[{ enrollment_status: { [Op.eq]: status } }];
+  if (status) {
+    whereReservations[Op.and] = [{ enrollment_status: { [Op.eq]: status } }];
   }
   const offset = (page - 1) * limit;
 
@@ -113,7 +113,7 @@ const getRegistrations = async (query) => {
     offset: parseInt(offset),
     limit: parseInt(limit),
   });
-
+  console.log(query);
   const totalPages = Math.ceil(count / limit);
 
   const rowsMap = rows.map((registration) => {
@@ -133,7 +133,7 @@ const getRegistrations = async (query) => {
 
   return {
     registrations: rowsMap,
-    totalRecords:count,
+    totalRecords: count,
     totalPages,
     currentPage: page,
   };

@@ -15,6 +15,11 @@ const http = {
     reason: "Es necesario estar identificado para realizar esta acción",
     code: 401,
   },
+  403: {
+    error: "Prohibido",
+    reason: "Es necesario tener los permisos necesarios",
+    code: 401,
+  },
   409: {
     error: "Ha ocurrido un error",
     reason: "Recurso ya existente, surgió un conflicto en el servidor",

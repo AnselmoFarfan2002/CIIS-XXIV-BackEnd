@@ -14,4 +14,9 @@ const authMid = (req, res, next) => {
   }
 };
 
-module.exports = authMid;
+const isAdmin = (req, res, next) => {
+  if (req.user.role == 1) next();
+  else return res.status(403).send(http["403"]);
+};
+
+module.exports = { authMid, isAdmin };

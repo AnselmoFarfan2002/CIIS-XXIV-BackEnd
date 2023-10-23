@@ -1,16 +1,14 @@
 const { Router } = require("express");
 const Users = require("../../models/Users");
 const http = require("../../utils/http.msg");
-const { error } = require("ajv/dist/vocabularies/applicator/dependencies");
-const crypto = require("crypto");
 const { encrypt } = require("../../utils/password.utils");
-const { sendMail, sendMailAtDomain } = require("../../utils/send.mail.utils");
+const { sendMailAtDomain } = require("../../utils/send.mail.utils");
 const { email_registro } = require("../../utils/emails/registro");
-const authMid = require("../../middlewares/v2/auth");
+const { authMid } = require("../../middlewares/v2/auth");
 const TallerInscriptionSQL = require("../../models/Taller/TallerInscription");
 const Taller = require("../../classes/Taller");
-const Inscriptions = require("../../models/Inscriptions");
 const CONTROLLER_SESSION = require("../../controllers/v2/session");
+const Reservation = require("../../models/Reservation");
 const routerUser = Router();
 
 routerUser.route("/user").post((req, res) => {
@@ -52,6 +50,7 @@ routerUser.route("/user").post((req, res) => {
 });
 
 routerUser.route("/user/inscription").get(authMid, async (req, res) => {
+  const { event } = req.query;
   try {
     let inscripciones = {
       talleres: [],
@@ -74,8 +73,12 @@ routerUser.route("/user/inscription").get(authMid, async (req, res) => {
       })
     );
 
-    let ciis = await Inscriptions.findOne({ where: { id_user: req.user.id } });
-    inscripciones.ciis = ciis ? ciis.status : 3;
+    let ciis = (
+      await Reservation.findOne({
+        where: { user_id: req.user.id, event_id: event },
+      })
+    ).dataValues;
+    inscripciones.ciis = ciis ? ciis.enrollment_status : 3;
     res.send(inscripciones);
   } catch (err) {
     console.log(err);

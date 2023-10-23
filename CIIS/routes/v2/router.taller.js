@@ -1,6 +1,6 @@
 const path = require("path");
 const Taller = require("../../classes/Taller");
-const authMid = require("../../middlewares/v2/auth");
+const { authMid } = require("../../middlewares/v2/auth");
 const TallerSQL = require("../../models/Taller/Taller");
 
 const http = require("../../utils/http.msg");
