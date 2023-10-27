@@ -7,4 +7,9 @@ RouterInscription.route("/event/:event/reservation/ciis")
   .post(CONTROLLER_INSCRIPTION.POST)
   .get(isAdmin, CONTROLLER_INSCRIPTION.GET);
 
+RouterInscription.route("/event/:event/reservation/ciis/:filename").get(
+  isAdmin,
+  CONTROLLER_INSCRIPTION.GET_FILENAME
+);
+
 module.exports = RouterInscription;

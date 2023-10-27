@@ -3,6 +3,7 @@ const Speakers = require("../models/Speakers");
 const TallerInscriptionSQL = require("../models/Taller/TallerInscription");
 const sequelize = require("../config/database");
 const { Sequelize, where } = require("sequelize");
+const Users = require("../models/Users");
 
 class Taller {
   constructor(data = {}) {
@@ -35,6 +36,31 @@ class Taller {
 
   async load(id) {
     Object.assign(this, (await TallerSQL.findByPk(id)).dataValues);
+    return Promise.resolve(this);
+  }
+
+  async loadInscriptions() {
+    let inscriptions = await TallerInscriptionSQL.findAll({
+      where: { relatedTaller: this.id },
+    });
+
+    this.inscriptions = inscriptions ?? [];
+    return Promise.resolve(this);
+  }
+
+  async loadInscriptionsUsers() {
+    if (this.inscriptions)
+      await Promise.all(
+        this.inscriptions.map(async (ins) => {
+          ins.relatedUser = await Users.findOne({
+            where: { id_user: ins.relatedUser },
+            attributes: ["id_user", "lastname_user", "name_user", "email_user"],
+          });
+
+          return Promise.resolve();
+        })
+      );
+
     return Promise.resolve(this);
   }
 

@@ -4,7 +4,7 @@ const http = require("../../utils/http.msg");
 const { encrypt } = require("../../utils/password.utils");
 const { sendMailAtDomain } = require("../../utils/send.mail.utils");
 const { email_registro } = require("../../utils/emails/registro");
-const { authMid } = require("../../middlewares/v2/auth");
+const { authMid, isAdmin } = require("../../middlewares/v2/auth");
 const TallerInscriptionSQL = require("../../models/Taller/TallerInscription");
 const Taller = require("../../classes/Taller");
 const CONTROLLER_SESSION = require("../../controllers/v2/session");
@@ -77,7 +77,7 @@ routerUser.route("/user/inscription").get(authMid, async (req, res) => {
       await Reservation.findOne({
         where: { user_id: req.user.id, event_id: event },
       })
-    ).dataValues;
+    )?.dataValues;
     inscripciones.ciis = ciis ? ciis.enrollment_status : 3;
     res.send(inscripciones);
   } catch (err) {

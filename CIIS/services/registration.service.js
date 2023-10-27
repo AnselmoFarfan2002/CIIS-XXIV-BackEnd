@@ -4,7 +4,7 @@ const Events = require("../models/Events");
 const Users = require("../models/Users");
 const PriceTypeAttendee = require("../models/PriceTypeAttendee");
 
-const getRegistrations = async (query) => {
+const getRegistrations = async (query, event_id = false) => {
   if (!Object.keys(query).length) {
     const { count, rows } = await Reservation.findAndCountAll({
       include: [
@@ -32,6 +32,8 @@ const getRegistrations = async (query) => {
         id: registration.id_reservation,
         typeattendee: registration.price_type_attendee.type_attendee_id,
         enrollmentstatus: registration.enrollment_status,
+        dir_voucher: registration.dir_voucher,
+        dir_fileuniversity: registration.dir_fileuniversity ?? null,
         numvoucher: registration.num_voucher,
         name: registration.user.name_user,
         lastname: registration.user.lastname_user,
@@ -39,6 +41,7 @@ const getRegistrations = async (query) => {
         dni: registration.user.dni_user,
         phone: registration.user.phone_user,
         price: registration.price_type_attendee.price_attendee,
+        scholar_code: registration.scholar_code,
       };
     });
 
@@ -81,7 +84,12 @@ const getRegistrations = async (query) => {
   }
 
   if (status) {
-    whereReservations[Op.and] = [{ enrollment_status: { [Op.eq]: status } }];
+    whereReservations[Op.and] = [
+      {
+        enrollment_status: { [Op.eq]: status },
+        ...(event_id ? { event_id } : {}),
+      },
+    ];
   }
   const offset = (page - 1) * limit;
 
@@ -113,13 +121,15 @@ const getRegistrations = async (query) => {
     offset: parseInt(offset),
     limit: parseInt(limit),
   });
-  console.log(query);
+
   const totalPages = Math.ceil(count / limit);
 
   const rowsMap = rows.map((registration) => {
     return {
       id: registration.id_reservation,
       typeattendee: registration.price_type_attendee.type_attendee_id,
+      dir_voucher: registration.dir_voucher,
+      dir_fileuniversity: registration.dir_fileuniversity ?? null,
       enrollmentstatus: registration.enrollment_status,
       numvoucher: registration.num_voucher,
       name: registration.user.name_user,

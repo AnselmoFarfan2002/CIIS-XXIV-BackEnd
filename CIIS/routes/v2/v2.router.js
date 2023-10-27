@@ -7,6 +7,8 @@ const { authMid } = require("../../middlewares/v2/auth");
 
 const fileUpload = require("express-fileupload");
 const RouterTaller = require("./router.taller");
+const RouterReservation = require("./router.reservation");
+const RouterSpeaker = require("./router.speaker");
 
 v2Router.use(
   fileUpload({
@@ -17,6 +19,8 @@ v2Router.use(
 v2Router.use("/", routerUser);
 v2Router.use("/", routerSession);
 v2Router.use("/", RouterTaller);
+v2Router.use("/", RouterSpeaker);
 v2Router.use("/", authMid, RouterInscription);
+v2Router.use("/", authMid, RouterReservation);
 
 module.exports = v2Router;

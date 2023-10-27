@@ -5,6 +5,7 @@ const { sendMailAtDomain } = require("../../utils/send.mail.utils");
 const { emailRegistroCIIS } = require("../../utils/emails/registro");
 const http = require("../../utils/http.msg");
 const { getRegistrations } = require("../../services/registration.service");
+const TypeAttendee = require("../../models/TypeAttendee");
 
 const CONTROLLER_INSCRIPTION = {};
 
@@ -220,9 +221,36 @@ CONTROLLER_INSCRIPTION.POST = (req, res) => {
 CONTROLLER_INSCRIPTION.GET = async (req, res) => {
   try {
     const { event } = req.params;
-    req.query.event = event;
-    let registrations = await getRegistrations(req.query);
-    res.send(registrations);
+    let reservations = await getRegistrations(req.query, event);
+    await Promise.all(
+      reservations.registrations.map(async (reservation) => {
+        reservation.typeattendee = await TypeAttendee.findOne({
+          where: {
+            id_type_attendee: reservation.typeattendee,
+          },
+        });
+
+        if (reservation.scholar_code)
+          reservation.scholar_code = await ScholarCodes.findOne({
+            where: {
+              code: reservation.scholar_code,
+            },
+          });
+
+        return Promise.resolve();
+      })
+    );
+    res.send(reservations);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(http["500"]);
+  }
+};
+
+CONTROLLER_INSCRIPTION.GET_FILENAME = async (req, res) => {
+  try {
+    const { filename } = req.params;
+    res.sendFile(path.join(GetCiisFolder(), filename));
   } catch (err) {
     console.log(err);
     res.status(500).send(http["500"]);
