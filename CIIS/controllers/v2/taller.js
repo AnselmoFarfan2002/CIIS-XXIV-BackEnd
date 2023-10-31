@@ -4,6 +4,12 @@ const Users = require("../../models/Users");
 const { confirm, abort } = require("../../utils/emails/confirmTaller");
 const { sendMailAtDomain } = require("../../utils/send.mail.utils");
 
+const path = require("path");
+const TallerSQL = require("../../models/Taller/Taller");
+
+const http = require("../../utils/http.msg");
+const { emailRegistroTaller } = require("../../utils/emails/registro");
+
 const CONTROLLER_TALLER = {};
 
 CONTROLLER_TALLER.GET = async (req, res) => {

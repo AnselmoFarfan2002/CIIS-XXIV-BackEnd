@@ -1,11 +1,4 @@
-const path = require("path");
-const Taller = require("../../classes/Taller");
 const { authMid, isAdmin } = require("../../middlewares/v2/auth");
-const TallerSQL = require("../../models/Taller/Taller");
-
-const http = require("../../utils/http.msg");
-const { sendMailAtDomain } = require("../../utils/send.mail.utils");
-const { emailRegistroTaller } = require("../../utils/emails/registro");
 const CONTROLLER_TALLER = require("../../controllers/v2/taller");
 
 const RouterTaller = require("express").Router();
