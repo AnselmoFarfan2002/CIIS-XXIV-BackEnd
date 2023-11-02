@@ -8,7 +8,7 @@ const ConferenceAttendance = sequelize.define(
   {
     created_at: {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {

@@ -96,6 +96,10 @@ const registerAttendance = async (req, res) => {
   }
 };
 
+const registerOneAttendance=()=>new Promise((resolve, reject) => {
+  
+})
+
 module.exports = {
   getEvents,
   getOneEvent,

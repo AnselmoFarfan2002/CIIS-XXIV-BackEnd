@@ -56,9 +56,26 @@ const getDateUTC=()=>{
   return `${fechaUTC5} ${horaUTC5}`;
 }
 
+const formatDateToUTC5=(datetimeUTC='2023-10-28T18:00:00.000Z')=>{
+   // Obtener la fecha y hora actual en UTC
+  const fechaHoraActualUTC = new Date(datetimeUTC);
+  
+  // Ajustar la hora actual para UTC-5 (restar 5 horas)
+  // fechaHoraActualUTC.setUTCHours(fechaHoraActualUTC.getUTCHours() - 5);
+  
+  // Obtener la fecha actual en formato UTC-5
+  const fechaUTC5 = fechaHoraActualUTC.toISOString().slice(0, 10); // Formato: YYYY-MM-DD
+  
+  // Obtener la hora actual en formato UTC-5
+  const horaUTC5 = fechaHoraActualUTC.toISOString().slice(11, 19); // Formato: HH:mm:ss
+  
+  return `${fechaUTC5} ${horaUTC5}`;
+}
+
 module.exports = {
   getDateTime,
   getDate,
   getDateTimeLocalPeru,
-  getDateUTC
+  getDateUTC,
+  formatDateToUTC5
 };
