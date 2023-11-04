@@ -2,6 +2,41 @@ const { Op,Sequelize } = require("sequelize");
 const Event = require("../models/Events");
 const Gallery=require("../models/GalleryEvents");
 
+const Reservation = require("../models/Reservation");
+const ConferenceAttendance = require("../models/ConferenceAttendance");
+const Users = require("../models/Users");
+
+const getCountAttendances = async (idEvent, idUser) => {
+  return new Promise (async (resolve, reject) => {
+      const user = await Users.findOne({
+        where: {
+          id_user: idUser,
+        }
+      });
+      if (!user) {
+          reject({code: 404, message: "No se ha encontrado el usuario"});
+          return;
+      }      
+      const reservation = await Reservation.findOne({
+        where: {
+          event_id: idEvent,
+          user_id: idUser,
+        }
+      });
+      if (!reservation) {
+          reject({code: 404, message: "No se ha encontrado la reservación"});
+          return;
+      }
+      const attendances = await ConferenceAttendance.count({
+          where: {
+            reservation_id: reservation.id_reservation,
+          },
+      });
+
+      resolve({num_attendance: attendances});
+  })
+}
+
 const getEvents = async (query) => {
   if (!Object.keys(query).length) {
     const events = await Event.findAll();
@@ -121,5 +156,6 @@ module.exports = {
   updateEvent,
   deleteEvent,
   getEventImagesByType,
-  searchEventActive
+  searchEventActive,
+  getCountAttendances
 };

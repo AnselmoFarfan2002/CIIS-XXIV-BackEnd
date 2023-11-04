@@ -1,7 +1,7 @@
 const {Router}=require("express");
 const fileUpload=require("express-fileupload");
 const routerEvent=Router();
-const {getEvents,getOneEvent,getEventImages,registerAttendance}=require("../../controllers/event.controller");
+const {getEvents,getOneEvent,getEventImages,registerAttendance,getCountAttendances}=require("../../controllers/event.controller");
 const {getSpeakersByEvent}=require("../../controllers/speaker.controller");
 const {getSponsorsByEvent}=require("../../controllers/sponsor.controller");
 const {getTopicsToEvent}=require("../../controllers/topics.controller");
@@ -31,5 +31,7 @@ routerEvent.get('/:idEvent/speakers',getSpeakersByEvent);
 routerEvent.get('/:idEvent',getOneEvent);
 routerEvent
 .get('/',getEvents);
+
+routerEvent.get('/:idEvent/attendances',validateExistEvent,getCountAttendances);
 
 module.exports=routerEvent;

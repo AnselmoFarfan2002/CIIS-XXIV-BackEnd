@@ -1,6 +1,8 @@
 const {Router}=require("express");
-const routerConference=Router();
+const routeConference=Router();
+const {validateExistUser,validateExistEvent}=require("../../middlewares/validateExistenceOfRecord");
+const {getConferenceDayUser} =require("../../controllers/conference.controller");
 
+routeConference.get('/',getConferenceDayUser);
 
-
-module.exports=routerConference;
+module.exports=routeConference;

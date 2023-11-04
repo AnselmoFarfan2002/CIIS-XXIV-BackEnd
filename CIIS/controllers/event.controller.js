@@ -16,6 +16,7 @@ const {
   getTimeOfDayToConferences
 } = require("../services/conference.attendance.service.js");
 const { getDateTime, getDateTimeLocalPeru,getDateUTC } = require("../utils/getdate.utils");
+
 const getEvents = async (req, res) => {
   try {
     const events = await EventService.getEvents(req.query);
@@ -96,9 +97,26 @@ const registerAttendance = async (req, res) => {
   }
 };
 
+
+const getCountAttendances = async (req, res) => {
+  try {
+    const { idEvent } = req.params;
+    const { user } = req.query;
+    
+    const attendances = await EventService.getCountAttendances(idEvent, user);
+    res.json(attendances);
+  } catch (error) {
+    if (error.code) {
+      return handleErrorResponse(res, error.message, error.code);
+    }
+    return handleHttpError(res, error);
+  }
+};
+
 const registerOneAttendance=()=>new Promise((resolve, reject) => {
   
 })
+
 
 module.exports = {
   getEvents,
@@ -108,4 +126,5 @@ module.exports = {
   deleteEvent,
   getEventImages,
   registerAttendance,
+  getCountAttendances
 };

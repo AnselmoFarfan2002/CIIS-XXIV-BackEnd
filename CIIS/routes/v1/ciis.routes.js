@@ -10,6 +10,8 @@ const reservationRoute=require("./reservation.routes");
 const reportsRoute=require("./reports.routes");
 const speakerRoute=require("./speaker.routes");
 const configRoute=require("./config.routes");
+const conferenceRoute=require("./conferences.routes");
+
 const handleGet = (req, res) => res.send('<h1>Hey buddy! this is an api...<br>here we do not provide user interfaces 🥴</h1>')
 
 router.get('/',handleGet)
@@ -23,5 +25,6 @@ router.use('/register',reservationRoute);
 router.use('/reports',reportsRoute);
 router.use('/speakers',speakerRoute);
 router.use('/config',configRoute);
+router.use('/conferences',conferenceRoute);
 
 module.exports = router;
