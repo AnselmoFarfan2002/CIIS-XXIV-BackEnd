@@ -45,6 +45,10 @@ const Reservation = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    allowedAttendance:{
+      type:DataTypes.BOOLEAN,
+      allowNull:false
+    }
   },
   {
     timestamps: false,

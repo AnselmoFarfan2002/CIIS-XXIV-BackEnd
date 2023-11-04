@@ -1,10 +1,10 @@
 const { Op, literal, Sequelize } = require("sequelize");
 const Reservation = require("../models/Reservation");
 const ConferenceAttendance = require("../models/ConferenceAttendance");
-const Speakers = require("../models/Speakers");
 const Conferences = require("../models/Conferences");
 const Events = require("../models/Events");
 const Users = require("../models/Users");
+const { getDateUTC, formatDateToUTC5,getDateTime } = require("../utils/getdate.utils");
 
 const searchRegisterByEventAndUser = async (event, user) => {
   return new Promise(async (resolve, reject) => {
@@ -29,7 +29,7 @@ const searchRegisterByEventAndUser = async (event, user) => {
     if (!registerFound) {
       reject({
         code: 404,
-        message: "No se ha encontrado el registro",
+        message: "No se encuentra registrado al evento",
       });
       return;
     }
@@ -47,12 +47,12 @@ const searchConferencesByEventAndDate = async (event, currentDate) => {
         [Op.and]: [
           {
             start_date_conference: {
-              [Op.gte]: currentDate,
+              [Op.lte]: currentDate,
             },
           },
           {
             exp_date_conference: {
-              [Op.lte]: currentDate,
+              [Op.gte]: currentDate,
             },
           },
         ],
@@ -71,21 +71,98 @@ const searchConferencesByEventAndDate = async (event, currentDate) => {
   });
 };
 
-const searchConferencesByShiftAndEvent = async (shift = true, event,currentDateTime) => {
+const searchOneConference = (conferenceId) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const conferenceFound = await Conferences.findOne({
+        where: {
+          [Op.and]: [
+            {
+              id_conference: conferenceId,
+            },
+            {
+              is_active: true,
+            },
+          ],
+        },
+      });
+
+      if (!conferenceFound) {
+        reject({
+          code: 404,
+          message: "No hay conferencia disponible",
+        });
+        return;
+      }
+      resolve(conferenceFound.toJSON());
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+const searchOneConferenceByDateTimeAvailability = async (eventId) => {
   return new Promise(async (resolve, reject) => {
-    const currentDate=currentDateTime.slice(0,10);
-    console.log({shift})
+    const currentDateTime = getDateTime();
+
+    const conferenceFound = await Conferences.findOne({
+      where: {
+        [Op.and]: [
+          {
+            event_id: eventId,
+          },
+          {
+            is_active: true,
+          },
+          {
+            start_date_conference: {
+              [Op.lte]: currentDateTime,
+            },
+          },
+          {
+            exp_date_conference: {
+              [Op.gte]: currentDateTime,
+            },
+          },
+        ],
+      },
+    });
+
+    if (!conferenceFound) {
+      reject({
+        code: 404,
+        message: "No hay conferencia disponible en este momento",
+      });
+      return;
+    }
+
+    resolve(conferenceFound.toJSON());
+  });
+};
+
+const searchConferencesByShiftAndEvent = async (
+  shift = true,
+  event,
+  currentDateTime
+) => {
+  return new Promise(async (resolve, reject) => {
+    const currentDate = currentDateTime.slice(0, 10);
+    console.log({ shift });
     const conferenceFound = await Conferences.findAll({
       attributes: ["id_conference"],
-      where:Sequelize.and(
+      where: Sequelize.and(
         Sequelize.where(
-          Sequelize.fn('DATE_FORMAT', Sequelize.col('start_date_conference'), '%Y-%m-%d'),
+          Sequelize.fn(
+            "DATE_FORMAT",
+            Sequelize.col("start_date_conference"),
+            "%Y-%m-%d"
+          ),
           currentDate
         ),
         {
           event_id: event,
           is_morning: shift,
-        }) 
+        }
+      ),
     });
 
     if (!conferenceFound || !conferenceFound.length) {
@@ -130,40 +207,112 @@ const createConferenceAttendance = async (
   });
 };
 
-const verifyRegisterStatusAndDateExp = async(reservation,currentDateTime) => {
+const verifyRegisterStatusAndDateExp = async (reservation, currentDateTime) => {
   return new Promise((resolve, reject) => {
     if (reservation.enrollment_status != 2) {
       reject({ code: 400, message: "El registro no fue confirmado" });
       return;
     }
-    
-    const {start_date="2023-08-11",exp_date="2023-08-11"}=reservation.event;
-    const date=currentDateTime.slice(0,10);
 
-    if(date>=start_date && date<=exp_date){
+    const { start_date = "2023-08-11", exp_date = "2023-08-11" } =
+      reservation.event;
+    const date = currentDateTime.slice(0, 10);
+
+    if (date >= start_date && date <= exp_date) {
       resolve();
       return;
     }
-    
+
     reject({
-    code:400,
-    message:"No hay evento disponible en esta fecha"
-    })
+      code: 400,
+      message: "No hay evento disponible en esta fecha",
+    });
     return;
   });
 };
 
-const getTimeOfDayToConferences=(currentDateTime,minHour='08',maxHour='13')=>{
-  const hour=currentDateTime.slice(11,13);
-  
-  let isMorning=0;
+const checkEventRegistrationAvailability = (enrollmentStatus = 1) =>
+  new Promise((resolve, reject) => {
+    if (enrollmentStatus != 2) {
+      reject({ code: 400, message: "Su registro al evento no fue confirmado" });
+      return;
+    }
+    resolve();
+  });
 
-  if(hour>=minHour && hour<=maxHour){
-    isMorning=1;
+const checkAllowedAttendance = (allowedAttendance = 0) =>
+  new Promise((resolve, reject) => {
+    if (!allowedAttendance) {
+      reject({
+        code: 400,
+        message: "No tiene permiso para marcar asistencia.",
+      });
+      return;
+    }
+    resolve();
+  });
+
+const checkConferenceAvailabilityByDateTime = (startDateTime, expDateTime) =>
+  new Promise((resolve, reject) => {
+    startDateTime = formatDateToUTC5(startDateTime);
+    expDateTime = formatDateToUTC5(expDateTime);
+    console.log(startDateTime, expDateTime);
+    const currentDateTime = getDateUTC();
+
+    if (currentDateTime >= startDateTime && currentDateTime <= expDateTime) {
+      resolve();
+      return;
+    }
+
+    reject({
+      code: 400,
+      message: "Evento no disponible en este horario",
+    });
+    return;
+  });
+
+const getTimeOfDayToConferences = (
+  currentDateTime,
+  minHour = "08",
+  maxHour = "13"
+) => {
+  const hour = currentDateTime.slice(11, 13);
+
+  let isMorning = 0;
+
+  if (hour >= minHour && hour <= maxHour) {
+    isMorning = 1;
   }
 
   return isMorning;
-}
+};
+
+const createOneConferenceAttendance = async (
+  conferenceId,
+  reservationId,
+  transaction
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const conferenceAttendanceObject = {
+        conference_id: conferenceId,
+        reservation_id: reservationId,
+      };
+      await ConferenceAttendance.create(conferenceAttendanceObject, {transaction});
+      resolve();
+    } catch (error) {
+      if (error.name === "SequelizeUniqueConstraintError") {
+        reject({
+          code: 409,
+          message: "Ya se ha registrado asistencia anteriormente",
+        });
+        return;
+      } else {
+        reject(error);
+      }
+    }
+  });
+};
 
 const getConferenceByDayByUser = async (day, userId) => {
   return new Promise (async (resolve, reject) => {
@@ -209,10 +358,16 @@ const getConferenceByDayByUser = async (day, userId) => {
 
 module.exports = {
   createConferenceAttendance,
+  createOneConferenceAttendance,
   searchConferencesByEventAndDate,
   searchRegisterByEventAndUser,
   searchConferencesByShiftAndEvent,
+  searchOneConference,
+  searchOneConferenceByDateTimeAvailability,
+  checkAllowedAttendance,
+  checkConferenceAvailabilityByDateTime,
+  checkEventRegistrationAvailability,
   verifyRegisterStatusAndDateExp,
   getTimeOfDayToConferences,
-  getConferenceByDayByUser,
+  getConferenceByDayByUser
 };

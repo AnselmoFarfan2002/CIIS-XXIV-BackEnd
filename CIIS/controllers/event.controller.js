@@ -97,6 +97,7 @@ const registerAttendance = async (req, res) => {
   }
 };
 
+
 const getCountAttendances = async (req, res) => {
   try {
     const { idEvent } = req.params;
@@ -111,6 +112,11 @@ const getCountAttendances = async (req, res) => {
     return handleHttpError(res, error);
   }
 };
+
+const registerOneAttendance=()=>new Promise((resolve, reject) => {
+  
+})
+
 
 module.exports = {
   getEvents,
