@@ -32,6 +32,6 @@ routerEvent.get('/:idEvent',getOneEvent);
 routerEvent
 .get('/',getEvents);
 
-routerEvent.get('/:idEvent/attendances',validateExistEvent,getCountAttendances);
+routerEvent.get('/:idEvent/attendances',checkAuth,validateExistEvent,getCountAttendances);
 
 module.exports=routerEvent;
