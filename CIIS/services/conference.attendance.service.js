@@ -1,9 +1,10 @@
-const { Op,Sequelize } = require("sequelize");
+const { Op, literal, Sequelize } = require("sequelize");
 const Reservation = require("../models/Reservation");
 const ConferenceAttendance = require("../models/ConferenceAttendance");
 const Speakers = require("../models/Speakers");
 const Conferences = require("../models/Conferences");
 const Events = require("../models/Events");
+const Users = require("../models/Users");
 
 const searchRegisterByEventAndUser = async (event, user) => {
   return new Promise(async (resolve, reject) => {
@@ -164,11 +165,54 @@ const getTimeOfDayToConferences=(currentDateTime,minHour='08',maxHour='13')=>{
   return isMorning;
 }
 
+const getConferenceByDayByUser = async (day, userId) => {
+  return new Promise (async (resolve, reject) => {
+      const user = await Users.findOne({
+        where: {
+          id_user: userId,
+        }
+      });
+      if (!user) {
+          reject({code: 404, message: "No se ha encontrado el usuario"});
+          return;
+      }  
+      const conferences = await Conferences.findAll({
+        attributes: [
+          'id_conference',
+          'topic_conference',
+          'start_date_conference',
+          'exp_date_conference', 
+          [literal('IF(`conference_attendances`.`conference_id` IS NOT NULL, 1, 0)'), 'attendance']
+        ],        
+        include: [
+          {
+            model: Speakers,
+            attributes: ['name_speaker','lastname_speaker'],
+          },
+          {
+            model: ConferenceAttendance,
+            required: false,
+            attributes: [],
+            where: {
+              reservation_id: {
+                [Op.in]: literal(`(SELECT id_reservation FROM reservations WHERE user_id = '${userId}')`),
+              },
+            },
+          },
+        ],
+        where: literal(`DATE(start_date_conference) = '${day}'`),
+      })
+
+      resolve(conferences);
+  })
+}
+
 module.exports = {
   createConferenceAttendance,
   searchConferencesByEventAndDate,
   searchRegisterByEventAndUser,
   searchConferencesByShiftAndEvent,
   verifyRegisterStatusAndDateExp,
-  getTimeOfDayToConferences
+  getTimeOfDayToConferences,
+  getConferenceByDayByUser,
 };
