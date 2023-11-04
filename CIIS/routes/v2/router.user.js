@@ -39,8 +39,8 @@ routerUser.route("/user").post((req, res) => {
       })
     )
     .then(async (newUser) => {
-      sendMailAtDomain(email, "Registro exitoso", email_registro);
-      CONTROLLER_SESSION.POST(req, res);
+      // sendMailAtDomain(email, "Registro exitoso", email_registro);
+      // CONTROLLER_SESSION.POST(req, res);
     })
     .catch((fail = null) => {
       fail.code

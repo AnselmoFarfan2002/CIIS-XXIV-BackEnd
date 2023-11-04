@@ -9,6 +9,7 @@ const fileUpload = require("express-fileupload");
 const RouterTaller = require("./router.taller");
 const RouterReservation = require("./router.reservation");
 const RouterSpeaker = require("./router.speaker");
+const RouterConference=require("./router.conference");
 
 v2Router.use(
   fileUpload({
@@ -22,5 +23,6 @@ v2Router.use("/", RouterTaller);
 v2Router.use("/", RouterSpeaker);
 v2Router.use("/", authMid, RouterInscription);
 v2Router.use("/", authMid, RouterReservation);
+v2Router.use("/conference",RouterConference);
 
 module.exports = v2Router;
