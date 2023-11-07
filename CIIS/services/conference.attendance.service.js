@@ -3,6 +3,7 @@ const Reservation = require("../models/Reservation");
 const ConferenceAttendance = require("../models/ConferenceAttendance");
 const Conferences = require("../models/Conferences");
 const Events = require("../models/Events");
+const Speakers=require("../models/Speakers");
 const Users = require("../models/Users");
 const Speakers = require("../models/Speakers");
 const { getDateUTC, formatDateToUTC5,getDateTime } = require("../utils/getdate.utils");
