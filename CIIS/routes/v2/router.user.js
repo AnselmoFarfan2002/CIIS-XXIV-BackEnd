@@ -12,7 +12,7 @@ const Reservation = require("../../models/Reservation");
 const routerUser = Router();
 
 routerUser.route("/user").post((req, res) => {
-  const { dni, email, password, name, lastname } = req.body;
+  const { dni, email, password, name, lastname, phone } = req.body;
 
   Users.findAll({ where: { dni_user: dni } })
     .then((data) => {
@@ -36,11 +36,12 @@ routerUser.route("/user").post((req, res) => {
         dni_user: dni,
         role_id: 2,
         password_user: await encrypt(password),
+        phone_user: phone,
       })
     )
     .then(async (newUser) => {
-      // sendMailAtDomain(email, "Registro exitoso", email_registro);
-      // CONTROLLER_SESSION.POST(req, res);
+      sendMailAtDomain(email, "Registro exitoso", email_registro);
+      CONTROLLER_SESSION.POST(req, res);
     })
     .catch((fail = null) => {
       fail.code
@@ -80,6 +81,31 @@ routerUser.route("/user/inscription").get(authMid, async (req, res) => {
     )?.dataValues;
     inscripciones.ciis = ciis ? ciis.enrollment_status : 3;
     res.send(inscripciones);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(http["500"]);
+  }
+});
+
+routerUser.route("/user/phone").patch(authMid, async (req, res) => {
+  try {
+    const { phone } = req.body;
+    Users.update({ phone_user: phone }, { where: { id_user: req.user.id } });
+    res.status(201).json({ msg: "ok" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(http["500"]);
+  }
+});
+
+routerUser.route("/user/password").patch(authMid, async (req, res) => {
+  try {
+    const { password } = req.body;
+    Users.update(
+      { password_user: await encrypt(password) },
+      { where: { id_user: req.user.id } }
+    );
+    res.status(201).json({ msg: "ok" });
   } catch (err) {
     console.log(err);
     res.status(500).send(http["500"]);

@@ -12,7 +12,7 @@ CONTROLLER_SESSION.POST = (req, res) => {
 
   Users.findOne({ where: { email_user: email } })
     .then(async (data) => {
-      console.log("login")
+      console.log("login");
       if (!data)
         return Promise.reject({
           error: "Usuario no registrado",
@@ -47,6 +47,7 @@ CONTROLLER_SESSION.POST = (req, res) => {
         role: user.role_id,
         email: user.email_user,
         name: user.name_user,
+        phone: user.phone_user,
         lastname: user.lastname_user,
         inscriptions: {
           ciis: inscription ? inscription.dataValues : false,
@@ -63,6 +64,7 @@ CONTROLLER_SESSION.POST = (req, res) => {
         httpOnly: true,
         maxAge: 2 * 60 * 60 * 1000, // 2 horas en segundos
         path: "/", // Ruta de la cookie
+        secure: true,
       });
 
       res.status(201).send(user);
