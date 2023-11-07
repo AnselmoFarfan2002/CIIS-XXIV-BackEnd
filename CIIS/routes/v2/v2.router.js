@@ -1,15 +1,17 @@
 const routerUser = require("./router.user");
-const v2Router = require("express")();
+const express = require("express");
+const v2Router = express();
 
 const routerSession = require("./router.session");
 const RouterInscription = require("./router.inscription");
-const { authMid } = require("../../middlewares/v2/auth");
+const { authMid, isAdmin } = require("../../middlewares/v2/auth");
 
 const fileUpload = require("express-fileupload");
 const RouterTaller = require("./router.taller");
 const RouterReservation = require("./router.reservation");
 const RouterSpeaker = require("./router.speaker");
-const RouterConference=require("./router.conference");
+const RouterConference = require("./router.conference");
+const path = require("path");
 
 v2Router.use(
   fileUpload({
@@ -23,6 +25,12 @@ v2Router.use("/", RouterTaller);
 v2Router.use("/", RouterSpeaker);
 v2Router.use("/", authMid, RouterInscription);
 v2Router.use("/", authMid, RouterReservation);
-v2Router.use("/conference",RouterConference);
+v2Router.use("/conference", RouterConference);
 
+v2Router.use(
+  "/",
+  authMid,
+  isAdmin,
+  express.static(path.join(process.cwd(), "uploads"))
+);
 module.exports = v2Router;
