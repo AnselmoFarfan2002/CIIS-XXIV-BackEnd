@@ -5,7 +5,7 @@ const { getDateTime } = require("../utils/getdate.utils");
 const getConferenceDayUser = async (req, res) => {
     try {
         const { day } = req.query;
-        const { user } = req.query;
+        const user = req.iduser;
         const conferences = await conferenceAttendanceServices.getConferenceByDayByUser(day,user);
         res.json(conferences);
     } catch (error) {

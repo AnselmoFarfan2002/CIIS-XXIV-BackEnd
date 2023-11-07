@@ -101,8 +101,7 @@ const registerAttendance = async (req, res) => {
 const getCountAttendances = async (req, res) => {
   try {
     const { idEvent } = req.params;
-    const { user } = req.query;
-    
+    const user = req.iduser;
     const attendances = await EventService.getCountAttendances(idEvent, user);
     res.json(attendances);
   } catch (error) {
