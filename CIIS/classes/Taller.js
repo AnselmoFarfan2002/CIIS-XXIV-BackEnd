@@ -54,7 +54,7 @@ class Taller {
         this.inscriptions.map(async (ins) => {
           ins.relatedUser = await Users.findOne({
             where: { id_user: ins.relatedUser },
-            attributes: ["id_user", "lastname_user", "name_user", "email_user"],
+            attributes: ["id_user", "lastname_user", "name_user", "email_user", "phone_user"],
           });
 
           return Promise.resolve();
