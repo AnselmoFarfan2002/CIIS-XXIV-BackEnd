@@ -1,4 +1,4 @@
-const { authMid, isAdmin } = require("../../middlewares/v2/auth");
+const { authMid, isAdmin, isAtLeastOrganizer } = require("../../middlewares/v2/auth");
 const CONTROLLER_TALLER = require("../../controllers/v2/taller");
 
 const RouterTaller = require("express").Router();
@@ -7,7 +7,7 @@ RouterTaller.route("/taller").get(CONTROLLER_TALLER.GET);
 
 RouterTaller.route("/taller/:id").get(
   authMid,
-  isAdmin,
+  isAtLeastOrganizer,
   CONTROLLER_TALLER.GET_ONE
 );
 

@@ -18,7 +18,7 @@ const http = {
   403: {
     error: "Prohibido",
     reason: "Es necesario tener los permisos necesarios",
-    code: 401,
+    code: 403,
   },
   409: {
     error: "Ha ocurrido un error",
