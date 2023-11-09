@@ -5,7 +5,7 @@ const {
   registerAttendanceConferenceCurrent,
   getConferenceDayUser,
 } = require("../../controllers/v2/conference.controller");
-const { authMid } = require("../../middlewares/v2/auth");
+const { authMid, isAtLeastOrganizer } = require("../../middlewares/v2/auth");
 const {
   validateExistUser,
   validateExistEvent,
@@ -17,6 +17,7 @@ conferenceRouter
   .post(
     "/event/:idEvent/attendance",
     authMid,
+    isAtLeastOrganizer,
     conferenceAttendanceDTO,
     validateExistEvent,
     validateExistUser,
