@@ -12,6 +12,7 @@ const {
   checkEventRegistrationAvailability,
   checkAllowedAttendance,
   checkConferenceAvailabilityByDateTime,
+  getConferenceByDayByUser
 } = require("../../services/conference.attendance.service");
 
 const { updateReservation } = require("../../services/registration.service");
@@ -147,7 +148,22 @@ const registerAttendanceConferenceCurrent = async (req, res) => {
   }
 };
 
+const getConferenceDayUser = async (req, res) => {
+  try {
+      const { day } = req.query;
+      const { id:userId } = req.user;
+      const conferences = await getConferenceByDayByUser(day,userId);
+      res.json(conferences);
+  } catch (error) {
+      if (typeof error.code === "number") {
+          handleErrorResponseV2(res, error.message, error.code);
+          return;
+      }
+      handleHttpErrorV2(res, error);
+  }
+}
 module.exports = {
   registerAttendanceByUser,
   registerAttendanceConferenceCurrent,
+  getConferenceDayUser
 };

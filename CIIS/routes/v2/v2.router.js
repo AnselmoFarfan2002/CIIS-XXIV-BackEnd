@@ -11,6 +11,7 @@ const RouterTaller = require("./router.taller");
 const RouterReservation = require("./router.reservation");
 const RouterSpeaker = require("./router.speaker");
 const RouterConference = require("./router.conference");
+const RouterEvent=require("./router.event");
 const path = require("path");
 
 v2Router.use(
@@ -26,6 +27,7 @@ v2Router.use("/", RouterSpeaker);
 v2Router.use("/", authMid, RouterInscription);
 v2Router.use("/", authMid, RouterReservation);
 v2Router.use("/conference", RouterConference);
+v2Router.use("/event", RouterEvent);
 
 v2Router.use(
   "/",
@@ -34,3 +36,4 @@ v2Router.use(
   express.static(path.join(process.cwd(), "uploads"))
 );
 module.exports = v2Router;
+
