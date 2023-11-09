@@ -6,7 +6,7 @@ routerSession
   .route("/session")
   .post(CONTROLLER_SESSION.POST)
   .delete((req, res) => {
-    res.cookie("miCookie", "", { expires: new Date(0) });
+    res.cookie("token","",{expires:new Date(0)});
     res.redirect("/");
   });
 
