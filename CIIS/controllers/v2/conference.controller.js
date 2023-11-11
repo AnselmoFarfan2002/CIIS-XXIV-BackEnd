@@ -6,67 +6,74 @@ const {
 
 const {
   createOneConferenceAttendance,
-  searchRegisterByEventAndUser,
+  searchRegisterByEventAndUserV2,
   searchOneConference,
   searchOneConferenceByDateTimeAvailability,
   checkEventRegistrationAvailability,
-  checkAllowedAttendance,
   checkConferenceAvailabilityByDateTime,
-  getConferenceByDayByUser
+  getConferenceByDayByUser,
+  checkAllowedAttendanceToUser,
 } = require("../../services/conference.attendance.service");
 
 const { updateReservation } = require("../../services/registration.service");
+const { updateUser } = require("../../services/user.service");
 
 const registerAttendanceByUser = async (req, res) => {
   const transaction = await sequelize.transaction();
 
   try {
     const { conferenceId } = req.params;
-    const { id:userId } = req.user;
+    const { id: userId } = req.user;
 
-    let regex=/^[0-9]+$/;
-  
-    if(!regex.test(conferenceId)){
-      handleErrorResponseV2(res, 'El parametro de la conferencia debe ser numérico', 400);
+    let regex = /^[0-9]+$/;
+
+    if (!regex.test(conferenceId)) {
+      handleErrorResponseV2(
+        res,
+        "El parametro de la conferencia debe ser numérico",
+        400
+      );
       return;
     }
 
-
     const conferenceFound = await searchOneConference(conferenceId);
-    
+
     const {
       event_id: eventId,
       start_date_conference: startDateTime,
       exp_date_conference: expDateTime,
     } = conferenceFound;
 
-    const reservationFound = await searchRegisterByEventAndUser(
+    const reservationFound = await searchRegisterByEventAndUserV2(
       eventId,
       userId
     );
 
-    const {
-      id_reservation: reservationId,
-      allowedAttendance,
-      enrollment_status,
-    } = reservationFound;
+    let reservationId = null;
 
-    await checkEventRegistrationAvailability(enrollment_status);
+    if (reservationFound) {
+      const { id_reservation, enrollment_status } = reservationFound;
 
-    await checkAllowedAttendance(allowedAttendance);
+      reservationId = id_reservation;
+
+      await checkEventRegistrationAvailability(enrollment_status);
+    }
+
+    await checkAllowedAttendanceToUser(userId);
 
     await checkConferenceAvailabilityByDateTime(startDateTime, expDateTime);
 
     await createOneConferenceAttendance(
       conferenceId,
       reservationId,
+      userId,
       transaction
     );
 
     await transaction.commit();
     res.send({
-      message:"Asistencia tomada"
-    })
+      message: "Asistencia tomada",
+    });
   } catch (error) {
     await transaction.rollback();
     if (typeof error.code == "number") {
@@ -83,51 +90,67 @@ const registerAttendanceConferenceCurrent = async (req, res) => {
 
   try {
     const { entry = 1 } = req.body;
-    const { idEvent:eventId } = req.params;
-    const { idUser:userId } = req;
+    const { idEvent: eventId } = req.params;
+    const { idUser: userId } = req;
 
+    console.log(userId)
+    let regex = /^[0-2]+$/;
 
-    let regex=/^[0-1]+$/;
-  
-    if(!regex.test(entry)){
-      handleErrorResponseV2(res, 'El parametro entrada solo puede ser 0 y 1', 400);
+    if (!regex.test(entry)) {
+      handleErrorResponseV2(
+        res,
+        "El parametro entrada solo puede ser 0 y 1",
+        400
+      );
       return;
     }
 
-    const reservationFound = await searchRegisterByEventAndUser(
-      eventId,
-      userId
-    );
-
-    const { id_reservation: reservationId, enrollment_status } =
-      reservationFound;
-
-    if (entry) {
+    if (entry==0) {
+      await updateUser(userId, { allowedAttendance: 0 }, transaction);
+      await transaction.commit();
+      res.send({message:"Asistencia Deshabilitada"});
+      return;
+    }
+    
+    let reservationId = null;
+    if(entry==1){ //habilitar y marcar asistencia
+      const reservationFound = await searchRegisterByEventAndUserV2(
+        eventId,
+        userId
+      );
+  
+      if (reservationFound) {
+        const { id_reservation, enrollment_status } = reservationFound;
+        await checkEventRegistrationAvailability(enrollment_status);
+  
+        reservationId=id_reservation;
+  
+      }
+  
       const conferenceFound = await searchOneConferenceByDateTimeAvailability(
         eventId
       );
-
+  
       const {
         id_conference: conferenceId,
         start_date_conference: startDateTime,
         exp_date_conference: expDateTime,
       } = conferenceFound;
-
-      await checkEventRegistrationAvailability(enrollment_status);
-
+  
       await checkConferenceAvailabilityByDateTime(startDateTime, expDateTime);
-
+  
       await createOneConferenceAttendance(
         conferenceId,
         reservationId,
+        userId,
         transaction
       );
     }
 
-    await updateReservation(
-      reservationId,
+    await updateUser(
+      userId,
       {
-        allowedAttendance: entry,
+        allowedAttendance: 1,
       },
       transaction
     );
@@ -135,7 +158,7 @@ const registerAttendanceConferenceCurrent = async (req, res) => {
     await transaction.commit();
 
     res.send({
-      message: "Asistencia Tomada",
+      message: (entry==1)?"Asistencia marcada":"Asistencia habilitada"
     });
   } catch (error) {
     await transaction.rollback();
@@ -150,20 +173,20 @@ const registerAttendanceConferenceCurrent = async (req, res) => {
 
 const getConferenceDayUser = async (req, res) => {
   try {
-      const { day } = req.query;
-      const { id:userId } = req.user;
-      const conferences = await getConferenceByDayByUser(day,userId);
-      res.json(conferences);
+    const { day } = req.query;
+    const { id: userId } = req.user;
+    const conferences = await getConferenceByDayByUser(day, userId);
+    res.json(conferences);
   } catch (error) {
-      if (typeof error.code === "number") {
-          handleErrorResponseV2(res, error.message, error.code);
-          return;
-      }
-      handleHttpErrorV2(res, error);
+    if (typeof error.code === "number") {
+      handleErrorResponseV2(res, error.message, error.code);
+      return;
+    }
+    handleHttpErrorV2(res, error);
   }
-}
+};
 module.exports = {
   registerAttendanceByUser,
   registerAttendanceConferenceCurrent,
-  getConferenceDayUser
+  getConferenceDayUser,
 };

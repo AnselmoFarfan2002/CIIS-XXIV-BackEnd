@@ -9,33 +9,72 @@ const { getDateUTC, formatDateToUTC5,getDateTime } = require("../utils/getdate.u
 
 const searchRegisterByEventAndUser = async (event, user) => {
   return new Promise(async (resolve, reject) => {
-    const registerFound = await Reservation.findOne({
-      where: {
-        user_id: user,
-        event_id: event,
-        active: true,
-      },
-      include: [
-        {
-          model: Events,
-          attributes: ["start_date", "exp_date"],
-          required: true,
-          where: {
-            active: true,
-          },
+    try {
+      
+      const registerFound = await Reservation.findOne({
+        where: {
+          user_id: user,
+          event_id: event,
+          active: true,
         },
-      ],
-    });
-
-    if (!registerFound) {
-      reject({
-        code: 404,
-        message: "No se encuentra registrado al evento",
+        include: [
+          {
+            model: Events,
+            attributes: ["start_date", "exp_date"],
+            required: true,
+            where: {
+              active: true,
+            },
+          },
+        ],
       });
-      return;
+  
+      if (!registerFound) {
+        reject({
+          code: 404,
+          message: "No se encuentra registrado al evento",
+        });
+        return;
+      }
+  
+      resolve(registerFound.toJSON());
+    } catch (error) {
+      reject(error)
     }
+  });
+};
 
-    resolve(registerFound.toJSON());
+const searchRegisterByEventAndUserV2 = async (event, user) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      
+      const registerFound = await Reservation.findOne({
+        where: {
+          user_id: user,
+          event_id: event,
+          active: true,
+        },
+        include: [
+          {
+            model: Events,
+            attributes: ["start_date", "exp_date"],
+            required: true,
+            where: {
+              active: true,
+            },
+          },
+        ],
+      });
+  
+      if (!registerFound) {
+        resolve(null);
+        return;
+      }
+  
+      resolve(registerFound.toJSON());
+    } catch (error) {
+      reject(error)
+    }
   });
 };
 
@@ -241,9 +280,16 @@ const checkEventRegistrationAvailability = (enrollmentStatus = 1) =>
     resolve();
   });
 
-const checkAllowedAttendance = (allowedAttendance = 0) =>
-  new Promise((resolve, reject) => {
-    if (!allowedAttendance) {
+const checkAllowedAttendanceToUser = (userId) =>
+  new Promise(async(resolve, reject) => {
+    const user=await Users.findOne({
+      attributes:['allowedAttendance'],
+      where:{
+        id_user:userId
+      }
+    });
+
+    if (user.allowedAttendance!=1) {
       reject({
         code: 400,
         message: "No tiene permiso para marcar asistencia.",
@@ -267,7 +313,7 @@ const checkConferenceAvailabilityByDateTime = (startDateTime, expDateTime) =>
 
     reject({
       code: 400,
-      message: "Evento no disponible en este horario",
+      message: "Conferencia no disponible en este horario",
     });
     return;
   });
@@ -291,6 +337,7 @@ const getTimeOfDayToConferences = (
 const createOneConferenceAttendance = async (
   conferenceId,
   reservationId,
+  userId,
   transaction
 ) => {
   return new Promise(async (resolve, reject) => {
@@ -298,6 +345,7 @@ const createOneConferenceAttendance = async (
       const conferenceAttendanceObject = {
         conference_id: conferenceId,
         reservation_id: reservationId,
+        user_id:userId
       };
       await ConferenceAttendance.create(conferenceAttendanceObject, {transaction});
       resolve();
@@ -370,10 +418,11 @@ module.exports = {
   searchConferencesByShiftAndEvent,
   searchOneConference,
   searchOneConferenceByDateTimeAvailability,
-  checkAllowedAttendance,
+  checkAllowedAttendanceToUser,
   checkConferenceAvailabilityByDateTime,
   checkEventRegistrationAvailability,
   verifyRegisterStatusAndDateExp,
   getTimeOfDayToConferences,
-  getConferenceByDayByUser
+  getConferenceByDayByUser,
+  searchRegisterByEventAndUserV2
 };

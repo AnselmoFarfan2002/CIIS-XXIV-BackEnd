@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const Reservations = require("../models/Reservation");
 const Conferences = require("../models/Conferences");
+const Users = require("../models/Users");
 
 const ConferenceAttendance = sequelize.define(
   "conference_attendance",
@@ -15,13 +16,22 @@ const ConferenceAttendance = sequelize.define(
     timestamps: false,
     indexes: [
       {
-        unique: true, // Add contrainst to unique id reservation and conference
-        fields: ["conference_id", "reservation_id"],
-        name: "unique_conference_reservation",
+        unique: true, 
+        fields: ["reservation_id","user_id","conference_id"],
+        name: "unique_attendance",
       },
     ],
   }
 );
+
+
+Users.hasMany(ConferenceAttendance,{
+  foreignKey:"user_id"
+});
+
+ConferenceAttendance.belongsTo(Users,{
+  foreignKey:"user_id"
+});
 
 Reservations.hasMany(ConferenceAttendance, {
   foreignKey: "reservation_id",
