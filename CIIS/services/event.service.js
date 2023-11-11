@@ -8,6 +8,7 @@ const Users = require("../models/Users");
 
 const getCountAttendances = async (idEvent, idUser) => {
   return new Promise (async (resolve, reject) => {
+    try {
       const user = await Users.findOne({
         where: {
           id_user: idUser,
@@ -34,6 +35,10 @@ const getCountAttendances = async (idEvent, idUser) => {
       });
 
       resolve({num_attendance: attendances});
+      
+    } catch (error) {
+      reject(error)      
+    }
   })
 }
 

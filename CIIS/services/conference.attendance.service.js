@@ -317,6 +317,7 @@ const createOneConferenceAttendance = async (
 
 const getConferenceByDayByUser = async (day, userId) => {
   return new Promise (async (resolve, reject) => {
+    try {
       const user = await Users.findOne({
         where: {
           id_user: userId,
@@ -354,6 +355,10 @@ const getConferenceByDayByUser = async (day, userId) => {
       })
 
       resolve(conferences);
+      
+    } catch (error) {
+      reject(error)
+    }
   })
 }
 
