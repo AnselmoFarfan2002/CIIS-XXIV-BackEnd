@@ -25,6 +25,11 @@ const http = {
     reason: "Recurso ya existente, surgió un conflicto en el servidor",
     code: 409,
   },
+  200: {
+    msg: "OK",
+    reason: "Operación realizada con éxito",
+    code: 201,
+  },
   201: {
     msg: "Recurso creado",
     reason: "Operación realizada con éxito",
