@@ -135,7 +135,7 @@ routerUser.route("/user/code").post(async (req, res) => {
 
     sendMailAtDomain(
       email,
-      "CIIS SUPPORT - Código único de usuario",
+      "CIIS SOPORTE - Código único de usuario",
       mail2sendUserCode({
         name: user.name_user,
         lastname: user.lastname_user,
@@ -180,7 +180,7 @@ routerUser.route("/user/restore").post(async (req, res) => {
 
     sendMailAtDomain(
       email,
-      "CIIS SUPPORT - Restauración de contraseña",
+      "CIIS SOPORTE - Restauración de contraseña",
       mail2sendUserPass({
         name: user.name_user,
         lastname: user.lastname_user,
