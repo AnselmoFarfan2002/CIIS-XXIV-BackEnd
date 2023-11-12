@@ -56,7 +56,7 @@ const registerAttendanceByUser = async (req, res) => {
 
       reservationId = id_reservation;
 
-      await checkEventRegistrationAvailability(enrollment_status);
+      // await checkEventRegistrationAvailability(enrollment_status);
     }
 
     await checkAllowedAttendanceToUser(userId);
@@ -121,7 +121,7 @@ const registerAttendanceConferenceCurrent = async (req, res) => {
   
       if (reservationFound) {
         const { id_reservation, enrollment_status } = reservationFound;
-        await checkEventRegistrationAvailability(enrollment_status);
+        // await checkEventRegistrationAvailability(enrollment_status);
   
         reservationId=id_reservation;
   
