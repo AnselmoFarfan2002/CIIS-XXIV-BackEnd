@@ -4,8 +4,13 @@ const {
   registerAttendanceByUser,
   registerAttendanceConferenceCurrent,
   getConferenceDayUser,
+  POST_ANY_ATTENDANCE,
 } = require("../../controllers/v2/conference.controller");
-const { authMid, isAtLeastOrganizer } = require("../../middlewares/v2/auth");
+const {
+  authMid,
+  isAtLeastOrganizer,
+  isAdmin,
+} = require("../../middlewares/v2/auth");
 const {
   validateExistUser,
   validateExistEvent,
@@ -24,4 +29,7 @@ conferenceRouter
     registerAttendanceConferenceCurrent
   )
   .get("/schedule-day", authMid, getConferenceDayUser);
+
+conferenceRouter.route("/:id").post(authMid, isAdmin, POST_ANY_ATTENDANCE);
+
 module.exports = conferenceRouter;

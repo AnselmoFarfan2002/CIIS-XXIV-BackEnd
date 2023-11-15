@@ -3,6 +3,9 @@ const {
   handleErrorResponseV2,
   handleHttpErrorV2,
 } = require("../../middlewares/handleError");
+const ConferenceAttendance = require("../../models/ConferenceAttendance");
+const Reservation = require("../../models/Reservation");
+const Users = require("../../models/Users");
 
 const {
   createOneConferenceAttendance,
@@ -17,6 +20,7 @@ const {
 
 const { updateReservation } = require("../../services/registration.service");
 const { updateUser } = require("../../services/user.service");
+const http = require("../../utils/http.msg");
 
 const registerAttendanceByUser = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -93,7 +97,7 @@ const registerAttendanceConferenceCurrent = async (req, res) => {
     const { idEvent: eventId } = req.params;
     const { idUser: userId } = req;
 
-    console.log(userId)
+    console.log(userId);
     let regex = /^[0-2]+$/;
 
     if (!regex.test(entry)) {
@@ -105,40 +109,40 @@ const registerAttendanceConferenceCurrent = async (req, res) => {
       return;
     }
 
-    if (entry==0) {
+    if (entry == 0) {
       await updateUser(userId, { allowedAttendance: 0 }, transaction);
       await transaction.commit();
-      res.send({message:"Asistencia Deshabilitada"});
+      res.send({ message: "Asistencia Deshabilitada" });
       return;
     }
-    
+
     let reservationId = null;
-    if(entry==1){ //habilitar y marcar asistencia
+    if (entry == 1) {
+      //habilitar y marcar asistencia
       const reservationFound = await searchRegisterByEventAndUserV2(
         eventId,
         userId
       );
-  
+
       if (reservationFound) {
         const { id_reservation, enrollment_status } = reservationFound;
         // await checkEventRegistrationAvailability(enrollment_status);
-  
-        reservationId=id_reservation;
-  
+
+        reservationId = id_reservation;
       }
-  
+
       const conferenceFound = await searchOneConferenceByDateTimeAvailability(
         eventId
       );
-  
+
       const {
         id_conference: conferenceId,
         start_date_conference: startDateTime,
         exp_date_conference: expDateTime,
       } = conferenceFound;
-  
+
       await checkConferenceAvailabilityByDateTime(startDateTime, expDateTime);
-  
+
       await createOneConferenceAttendance(
         conferenceId,
         reservationId,
@@ -158,7 +162,7 @@ const registerAttendanceConferenceCurrent = async (req, res) => {
     await transaction.commit();
 
     res.send({
-      message: (entry==1)?"Asistencia marcada":"Asistencia habilitada"
+      message: entry == 1 ? "Asistencia marcada" : "Asistencia habilitada",
     });
   } catch (error) {
     await transaction.rollback();
@@ -185,8 +189,35 @@ const getConferenceDayUser = async (req, res) => {
     handleHttpErrorV2(res, error);
   }
 };
+
+const POST_ANY_ATTENDANCE = async (req, res) => {
+  try {
+    const { dni } = req.body;
+    const { id } = req.params;
+    let user = (await Users.findOne({ where: { dni_user: dni } }))?.dataValues;
+
+    let reservation = (
+      await Reservation.findOne({ where: { user_id: user.id_user } })
+    )?.dataValues;
+
+    await ConferenceAttendance.create({
+      conference_id: Number(id),
+      user_id: user.id_user,
+      ...(reservation?.id_reservation
+        ? { reservation_id: reservation.id_reservation }
+        : {}),
+    });
+
+    res.send({ msg: "Asistencia marcada" });
+  } catch (err) {
+    console.log(err);
+    res.send(http["500"]);
+  }
+};
+
 module.exports = {
   registerAttendanceByUser,
   registerAttendanceConferenceCurrent,
   getConferenceDayUser,
+  POST_ANY_ATTENDANCE,
 };
