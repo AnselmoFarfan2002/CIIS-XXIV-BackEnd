@@ -103,6 +103,30 @@ routerUser.route("/user/phone").patch(authMid, async (req, res) => {
   }
 });
 
+routerUser.route("/user/name").patch(authMid, async (req, res) => {
+  try {
+    const { name } = req.body;
+    Users.update({ name_user: name }, { where: { id_user: req.user.id } });
+    res.status(201).json({ msg: "ok" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(http["500"]);
+  }
+});
+
+routerUser.route("/user/lastname").patch(authMid, async (req, res) => {
+  try {
+    const { lastname } = req.body;
+    Users.update(
+      { lastname_user: lastname },
+      { where: { id_user: req.user.id } }
+    );
+    res.status(201).json({ msg: "ok" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(http["500"]);
+  }
+});
 routerUser.route("/user/password").patch(authMid, async (req, res) => {
   try {
     const { password } = req.body;
